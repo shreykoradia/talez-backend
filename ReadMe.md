@@ -6,9 +6,9 @@ Talez is a SaaS platform designed for users and stakeholders to share ideas, gat
 
 **Key Features**
 
--Idea Collaboration: Talez provides a space for users to brainstorm, propose features, or discuss modules collaboratively. It goes beyond the limitations of traditional scrum meetings, enabling a dynamic exchange of insights.
+- Idea Collaboration: Talez provides a space for users to brainstorm, propose features, or discuss modules collaboratively. It goes beyond the limitations of traditional scrum meetings, enabling a dynamic exchange of insights.
 
--Collective Feedback: Users can gather feedback from various stakeholders in real-time, creating a more inclusive decision-making process. Talez streamlines the feedback loop, making it efficient and accessible to all team members.
+- Collective Feedback: Users can gather feedback from various stakeholders in real-time, creating a more inclusive decision-making process. Talez streamlines the feedback loop, making it efficient and accessible to all team members.
 
 **Not an Alternative to Scrum Meetings, But...**
 
