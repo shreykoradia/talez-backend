@@ -10,10 +10,4 @@ router.patch(
   profileController.updateProfileHeader
 );
 
-router.post(
-  "/update-card",
-  authenticateToken,
-  profileController.updateProfileCard
-);
-
 export default router;
