@@ -36,6 +36,7 @@ const createWorkFlow = async (req: Request, res: Response) => {
       userId,
       validatedResult?.value
     );
+    res.status(201).json({ data: createWorkFlowData, msg: "success" });
   } catch (error) {
     console.error("Something Went Wrong!", error);
     throw error;

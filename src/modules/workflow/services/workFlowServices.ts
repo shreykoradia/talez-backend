@@ -25,12 +25,12 @@ const createWorkFlow = async (userId: string, validatedData: userData) => {
     const authorName = user?.username;
 
     //saving the workflow account
-
     const newWorkFlow = new workFlowModel({
       ...validatedData,
       authorId,
       authorName,
     });
+    return newWorkFlow;
   } catch (error) {
     console.error("Error", Error);
     throw error;
