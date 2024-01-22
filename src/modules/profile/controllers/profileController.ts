@@ -2,10 +2,7 @@ import { Request, Response } from "express";
 import Joi from "joi";
 import profileServices from "../services/profileServices";
 
-const updateProfileHeader = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+const updateProfileHeader = async (req: any, res: Response): Promise<void> => {
   const updateProfileSchema = Joi.object({
     username: Joi.string().trim().min(3).max(15).optional().label("Username"),
     email: Joi.string().trim().email().optional().label("Email"),

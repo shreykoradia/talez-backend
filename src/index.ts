@@ -1,21 +1,25 @@
-import express, { Express, Request, Response, Application } from "express";
+import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
+import connectToMongoDB from "./config/mongodb";
 import authRoutes from "./modules/auth/routes/authRoutes";
 import profileRoutes from "./modules/profile/routes/profileRoutes";
+import workFlowRoutes from "./modules/workflow/routes/workFlowRoutes";
 
-//For env File
 dotenv.config();
 
-const app: Application = express();
-const port = process.env.PORT || 4001;
+const app = express();
+const port = 3000;
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Welcome to Express & TypeScript Server");
-});
+app.use(cors());
+connectToMongoDB();
+
+app.use(express.json());
 
 app.use("/v1/auth", authRoutes);
 app.use("/v1/profile", profileRoutes);
+app.use("/v1/workflow", workFlowRoutes);
 
 app.listen(port, () => {
-  console.log(`Server is Fire at http://localhost:${port}`);
+  return console.log(`Express is listening at http://localhost:${port}`);
 });
