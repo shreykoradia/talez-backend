@@ -28,6 +28,6 @@ const workflowSchema = new Schema({
   },
 });
 
-const workFlowModel = model<workFlow>("Stories", workflowSchema);
+const workFlowModel = model<workFlow>("workflows", workflowSchema);
 
 export default workFlowModel;
