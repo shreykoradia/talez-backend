@@ -21,3 +21,10 @@ For example, if you need to brainstorm a new feature or module, you can open a n
 Is Talez an open-source SaaS platform? As of now, the decision is pending. I am Shrey Koradia, the creator and maintainer of Talez, working diligently to optimize your business processes with the aim of making it go "Bizzzz." Whether you're interested in having a chat or exploring potential collaborations, feel free to reach out to me on [X](www.twitter.com/shreykoradia) or via email at device.shreykoradia@gmail.com.
 
 Let's revolutionize collaboration and ideation with Talez!
+
+#### Todo for talez backend in jan/feb sprint
+
+1. Addition of Feedback API endpoints
+2. Additon of get endpoint for create workflow
+3. Addition of Invite Endpoints
+4. Addition of Verify user email endpoints
