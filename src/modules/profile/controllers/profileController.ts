@@ -24,11 +24,10 @@ const updateProfileHeader = async (req: any, res: Response): Promise<void> => {
       }));
       res.status(400).json({ errors });
     }
-    // Todo --- Convert the Validatate to the profile services
-    // const validatedUserData = validatedData?.value;
+    const validatedUserData = validatedData?.value;
     const updatedUserData = await profileServices.updateProfileServices(
       userId,
-      req.body
+      validatedUserData
     );
     if (!updatedUserData) {
       return;

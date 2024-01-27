@@ -30,6 +30,9 @@ const createWorkFlow = async (userId: string, validatedData: userData) => {
       authorId,
       authorName,
     });
+
+    await newWorkFlow.save();
+
     return newWorkFlow;
   } catch (error) {
     console.error("Error", Error);
