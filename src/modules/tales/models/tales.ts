@@ -4,14 +4,14 @@ import { downvote, feedback, reaction, tale, upvote } from "../types";
 const upVoteSchema = new Schema<upvote>({
   upvote_author_id: {
     type: String,
-    required: true,
+    required: false,
   },
 });
 
 const downVoteSchema = new Schema<downvote>({
   downvote_author_id: {
     type: String,
-    required: true,
+    required: false,
   },
 });
 
@@ -25,7 +25,11 @@ const feedbackSchema = new Schema<feedback>({
     type: String,
     required: true,
   },
-  feedback_author: {
+  feedback_author_id: {
+    type: String,
+    required: true,
+  },
+  feedback_author_name: {
     type: String,
     required: true,
   },
@@ -52,6 +56,10 @@ const taleSchema = new Schema<tale>({
     required: true,
   },
   authorName: {
+    type: String,
+    required: true,
+  },
+  workflow_id: {
     type: String,
     required: true,
   },

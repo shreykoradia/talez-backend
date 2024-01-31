@@ -1,9 +1,16 @@
 import { ObjectId } from "mongodb";
-import { tale } from "../types";
+import { feedback, tale } from "../types";
 import userModel from "../../auth/models/users";
 import talesModel from "../models/tales";
+import mongoose from "mongoose";
 
-const createTales = async (userId: string, validatedData: tale) => {
+// create tale service
+
+const createTales = async (
+  userId: string,
+  workflowId: any,
+  validatedData: tale
+) => {
   try {
     if (!validatedData) {
       return;
@@ -16,12 +23,25 @@ const createTales = async (userId: string, validatedData: tale) => {
       throw new Error("User not found");
     }
 
+    const workflow = await userModel.findById(workflowId);
+
+    if (!workflow) {
+      throw new Error("WorkFlow not found");
+    }
+
+    if (!ObjectId.isValid(workflowId)) {
+      throw new Error("Invalid workflowId");
+    }
+
     //extracting author for tales
     const authorId = userId.toString();
     const authorName = user?.username;
 
     const newTale = new talesModel({
-      ...validatedData,
+      title: validatedData.title,
+      description: validatedData.description,
+      feedback: null,
+      workflowId: workflowId,
       authorId,
       authorName,
     });
@@ -34,4 +54,41 @@ const createTales = async (userId: string, validatedData: tale) => {
   }
 };
 
-export default { createTales };
+// add-feedback service
+
+const addFeedBack = async (userId: string, validatedData: feedback) => {
+  try {
+    if (!validatedData) {
+      return;
+    }
+    if (!ObjectId.isValid(userId)) {
+      throw new Error("Invalid userId");
+    }
+    const user = await userModel.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // extracting authorName & authorId
+    const authorId = userId.toString();
+    const authorName = user?.username;
+
+    const newFeedback = new talesModel({
+      feedback: validatedData.feedback,
+      feedback_author_id: authorId,
+      feedback_author_name: authorName,
+      reaction: null,
+    });
+    await newFeedback.save();
+    return newFeedback;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+// add upvote feedback service
+
+// add downvote feedback service
+
+export default { createTales, addFeedBack };
