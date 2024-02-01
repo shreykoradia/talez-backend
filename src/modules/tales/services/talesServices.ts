@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { feedback, tale } from "../types";
+import { tale } from "../types";
 import userModel from "../../auth/models/users";
 import talesModel from "../models/tales";
 import mongoose from "mongoose";
@@ -54,41 +54,8 @@ const createTales = async (
   }
 };
 
-// add-feedback service
-
-const addFeedBack = async (userId: string, validatedData: feedback) => {
-  try {
-    if (!validatedData) {
-      return;
-    }
-    if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
-    }
-    const user = await userModel.findById(userId);
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    // extracting authorName & authorId
-    const authorId = userId.toString();
-    const authorName = user?.username;
-
-    const newFeedback = new talesModel({
-      feedback: validatedData.feedback,
-      feedback_author_id: authorId,
-      feedback_author_name: authorName,
-      reaction: null,
-    });
-    await newFeedback.save();
-    return newFeedback;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};
-
 // add upvote feedback service
 
 // add downvote feedback service
 
-export default { createTales, addFeedBack };
+export default { createTales };
