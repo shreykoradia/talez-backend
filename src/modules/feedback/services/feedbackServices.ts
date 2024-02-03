@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb";
 import userModel from "../../auth/models/users";
-import talesModel from "../../tales/models/tales";
 import { feedback } from "../types";
 import feedbackModel from "../models/feedback";
 
@@ -30,7 +29,6 @@ const addFeedBack = async (
       feedback_author_id: authorId,
       feedback_author_name: authorName,
       tale_id: taleId,
-      reaction: null,
     });
     await newFeedback.save();
     return newFeedback;
