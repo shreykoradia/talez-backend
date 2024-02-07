@@ -2,7 +2,6 @@ import { ObjectId } from "mongodb";
 import { tale } from "../types";
 import userModel from "../../auth/models/users";
 import talesModel from "../models/tales";
-import mongoose from "mongoose";
 
 // create tale service
 
@@ -25,10 +24,6 @@ const createTales = async (
 
     const workflow = await userModel.findById(workflowId);
 
-    if (!workflow) {
-      throw new Error("WorkFlow not found");
-    }
-
     if (!ObjectId.isValid(workflowId)) {
       throw new Error("Invalid workflowId");
     }
@@ -41,9 +36,9 @@ const createTales = async (
       title: validatedData.title,
       description: validatedData.description,
       feedback: null,
-      workflowId: workflowId,
-      authorId,
-      authorName,
+      workflow_id: workflowId,
+      author_id: authorId,
+      author_name: authorName,
     });
 
     await newTale.save();

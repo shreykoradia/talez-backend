@@ -5,6 +5,7 @@ import connectToMongoDB from "./config/mongodb";
 import authRoutes from "./modules/auth/routes/authRoutes";
 import profileRoutes from "./modules/profile/routes/profileRoutes";
 import workFlowRoutes from "./modules/workflow/routes/workFlowRoutes";
+import talesRoutes from "./modules/tales/routes/talesRoutes";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use("/v1/auth", authRoutes);
 app.use("/v1/profile", profileRoutes);
 app.use("/v1/workflow", workFlowRoutes);
+app.use("/v1/tales", talesRoutes);
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);

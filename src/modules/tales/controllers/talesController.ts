@@ -50,11 +50,7 @@ const createTales = async (req: Request, res: Response) => {
       workflowId,
       validatedResult?.value
     );
-    if (!newTale) {
-      return;
-    } else {
-      res.status(201).json({ newTale, msg: "Tale successfully created" });
-    }
+    res.status(201).json({ newTale, msg: "Tale successfully created" });
   } catch (error) {
     console.error("Something Went Wrong!", error);
     res.status(500).json({ error: error });

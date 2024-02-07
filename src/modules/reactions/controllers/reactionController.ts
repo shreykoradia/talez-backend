@@ -63,7 +63,7 @@ const downvote = async (
     if (userData?.vote_type !== "downvote") {
       return;
     }
-    const response = await reactionServices.upVote(
+    const response = await reactionServices.downVote(
       userId,
       talez_id,
       workflow_id,

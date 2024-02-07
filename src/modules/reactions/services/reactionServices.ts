@@ -24,20 +24,32 @@ const upVote = async (
     const authorId = userId.toString();
     const authorName = user?.username;
 
-    const newUpVote = new reactionModel({
+    const existingDownVote = await reactionModel.findOne({
       talez_id,
       workflow_id,
-      authorName,
-      author_id: authorId,
-      userData,
+      author_id: userId,
+      userData: "downvote",
     });
-    await newUpVote.save();
-    return newUpVote;
+    if (existingDownVote) {
+      console.log(existingDownVote);
+    } else {
+      const newUpVote = new reactionModel({
+        talez_id,
+        workflow_id,
+        authorName,
+        author_id: authorId,
+        userData,
+      });
+      await newUpVote.save();
+      return newUpVote;
+    }
   } catch (error) {
     console.error(error);
     throw new Error("Something Went Wrong!");
   }
 };
+
+// downvote
 
 const downVote = async (
   userId: string,
