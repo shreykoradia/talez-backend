@@ -6,6 +6,7 @@ import {
   RequestQuery,
   ResponseBody,
 } from "../../../types/express";
+import reactionModel from "../models/reactions";
 
 // add upvote
 const upvote = async (
@@ -17,25 +18,37 @@ const upvote = async (
     const userId = req.user?.userId;
     const talez_id = req?.query?.taleId;
     const workflow_id = req?.query?.workflowId;
-    if (!userData) {
-      return;
-    }
+
     if (!userId) {
-      return;
+      throw Error("UserId requirede");
     }
     if (!talez_id) {
-      return;
+      throw Error("taleId requirede");
     }
     if (userData?.vote_type !== "upvote") {
-      return;
+      throw Error("Upvote Requried");
     }
-    const response = await reactionServices.upVote(
-      userId,
+
+    const existingUpVote = await reactionModel.findOne({
       talez_id,
       workflow_id,
-      userData?.vote_type
-    );
-    res.status(201).json({ response, msg: "upvoted successfully" });
+      author_id: userId,
+      vote_type: "upvote",
+    });
+
+    if (existingUpVote) {
+      res
+        .status(400)
+        .json({ res: existingUpVote, msg: "Upvote by User Already Exists" });
+    } else {
+      const response = await reactionServices.upVote(
+        userId,
+        talez_id,
+        workflow_id,
+        userData?.vote_type
+      );
+      res.status(201).json({ response, msg: "upvoted successfully" });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json("Something Went Wrong!");
@@ -51,9 +64,7 @@ const downvote = async (
     const userId = req.user?.userId;
     const talez_id = req?.query?.taleId;
     const workflow_id = req?.query?.workflowId;
-    if (!userData) {
-      return;
-    }
+
     if (!userId) {
       return;
     }
@@ -63,6 +74,20 @@ const downvote = async (
     if (userData?.vote_type !== "downvote") {
       return;
     }
+
+    const existingDownVote = await reactionModel.findOne({
+      talez_id,
+      workflow_id,
+      author_id: userId,
+      vote_type: "downvote",
+    });
+
+    if (existingDownVote) {
+      res
+        .status(400)
+        .json({ res: existingDownVote, msg: "Downvote Already Exists" });
+    }
+
     const response = await reactionServices.downVote(
       userId,
       talez_id,
