@@ -7,3 +7,16 @@ declare global {
     }
   }
 }
+
+export interface RequestParams {}
+
+export interface ResponseBody {}
+
+export interface RequestBody {
+  vote_type: any;
+}
+
+export interface RequestQuery {
+  taleId?: string;
+  workflowId: string;
+}
