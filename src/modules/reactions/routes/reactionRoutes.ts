@@ -3,7 +3,7 @@ import reactionController from "../controllers/reactionController";
 
 const router = express();
 
-router.use("/upvote", reactionController.upvote);
-router.use("/downvote", reactionController.downvote);
+router.post("/upvote", reactionController.upvote);
+router.post("/downvote", reactionController.downvote);
 
 export default router;
