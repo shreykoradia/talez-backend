@@ -24,25 +24,31 @@ const upVote = async (
     const authorId = userId.toString();
     const authorName = user?.username;
 
+    // exisitng downVote
     const existingDownVote = await reactionModel.findOne({
       talez_id,
       workflow_id,
       author_id: userId,
-      userData: "downvote",
+      vote_type: "downvote",
     });
     if (existingDownVote) {
-      console.log(existingDownVote);
-    } else {
-      const newUpVote = new reactionModel({
+      await reactionModel.findOneAndDelete({
         talez_id,
         workflow_id,
-        authorName,
-        author_id: authorId,
-        userData,
+        author_id: userId,
+        vote_type: "downvote",
       });
-      await newUpVote.save();
-      return newUpVote;
     }
+
+    const newUpVote = new reactionModel({
+      talez_id,
+      workflow_id,
+      authorName,
+      author_id: authorId,
+      vote_type: userData,
+    });
+    await newUpVote.save();
+    return newUpVote;
   } catch (error) {
     console.error(error);
     throw new Error("Something Went Wrong!");
@@ -72,12 +78,28 @@ const downVote = async (
     const authorId = userId.toString();
     const authorName = user?.username;
 
+    // exisitng downVote
+    const existingUpVote = await reactionModel.findOne({
+      talez_id,
+      workflow_id,
+      author_id: userId,
+      vote_type: "upvote",
+    });
+    if (existingUpVote) {
+      await reactionModel.findOneAndDelete({
+        talez_id,
+        workflow_id,
+        author_id: userId,
+        vote_type: "upvote",
+      });
+    }
+
     const newDownVote = new reactionModel({
       talez_id,
       workflow_id,
       authorName,
       author_id: authorId,
-      userData,
+      vote_type: userData,
     });
     await newDownVote.save();
     return newDownVote;

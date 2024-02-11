@@ -7,6 +7,7 @@ import profileRoutes from "./modules/profile/routes/profileRoutes";
 import workFlowRoutes from "./modules/workflow/routes/workFlowRoutes";
 import talesRoutes from "./modules/tales/routes/talesRoutes";
 import feedbackRoutes from "./modules/feedback/routes/feedbackRoutes";
+import reactionRoutes from "./modules/reactions/routes/reactionRoutes";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use("/v1/profile", profileRoutes);
 app.use("/v1/workflow", workFlowRoutes);
 app.use("/v1/tales", talesRoutes);
 app.use("/v1/feedback", feedbackRoutes);
+app.use("/v1/reaction", reactionRoutes);
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
