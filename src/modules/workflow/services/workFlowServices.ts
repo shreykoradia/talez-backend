@@ -40,4 +40,12 @@ const createWorkFlow = async (userId: string, validatedData: userData) => {
   }
 };
 
-export default { createWorkFlow };
+const getAllWorkFlows = (userId: string, limit: number, offset: number) => {
+  const workflow = workFlowModel
+    .find({ authorId: userId })
+    .limit(limit)
+    .skip(offset);
+  return workflow;
+};
+
+export default { createWorkFlow, getAllWorkFlows };
