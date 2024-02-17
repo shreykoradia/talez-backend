@@ -72,6 +72,7 @@ const getFeedbacks = async (
   res: Response
 ) => {
   try {
+    console.log("hiii");
     const taleId = req.query?.taleId;
     const userId = req.user?.userId;
     const limit = req.paginate?.limit as number;
@@ -90,10 +91,11 @@ const getFeedbacks = async (
       limit,
       offset
     );
+    res.status(200).json({ feedbacks: response });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: error });
   }
 };
 
-export default { addFeedBack };
+export default { addFeedBack, getFeedbacks };
