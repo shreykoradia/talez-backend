@@ -1,13 +1,16 @@
 import express from "express";
 import { authenticateToken } from "../../../shared/middlware/authMiddleWare";
 import talesController from "../controllers/talesController";
+import { paginateMiddleWare } from "../../../shared/middlware/paginateMiddleWare";
 
 const router = express();
 
 router.post("/create-tales", authenticateToken, talesController.createTales);
-
-// TODO API's
-
-// router.use("/get-tales", authenticateToken, talesController.getTales);
+router.get(
+  "/get-tales",
+  authenticateToken,
+  paginateMiddleWare,
+  talesController.getTales
+);
 
 export default router;
