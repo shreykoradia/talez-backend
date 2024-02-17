@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import Joi from "joi";
 import talesServices from "../services/talesServices";
+import {
+  RequestBody,
+  RequestParams,
+  RequestQuery,
+  ResponseBody,
+} from "../../../types/express";
 
 const createTales = async (req: Request, res: Response) => {
   const taleValidationSchema = Joi.object({
@@ -57,4 +63,27 @@ const createTales = async (req: Request, res: Response) => {
   }
 };
 
-export default { createTales };
+const getTales = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
+  try {
+    const userId = req?.user?.userId;
+    const workflowId = req.query?.workflowId;
+    const limit = req?.paginate?.limit as number;
+    const offset = req?.paginate?.offset as number;
+
+    const response = await talesServices.getTales(
+      userId,
+      workflowId,
+      limit,
+      offset
+    );
+    res.status(200).json({ tales: response });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json(error);
+  }
+};
+
+export default { createTales, getTales };

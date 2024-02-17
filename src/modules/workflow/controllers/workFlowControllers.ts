@@ -43,4 +43,25 @@ const createWorkFlow = async (req: Request, res: Response) => {
   }
 };
 
-export default { createWorkFlow };
+const getAllWorkFlows = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      throw Error("UserId does not exists");
+    }
+    // Access limit and offset from paginate object using optional chaining
+    const limit = req.paginate?.limit as number;
+    const offset = req.paginate?.offset as number;
+    const response = await workFlowServices.getAllWorkFlows(
+      userId,
+      limit,
+      offset
+    );
+    res.status(200).json({ workflows: response });
+  } catch (error) {
+    console.error("Something Went Wrong Huh!", error);
+    res.status(400).json("Something Went Wrong Huh!");
+  }
+};
+
+export default { createWorkFlow, getAllWorkFlows };

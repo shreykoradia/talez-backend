@@ -4,6 +4,7 @@ declare global {
   namespace Express {
     interface Request {
       user?: Record<string, any>;
+      paginate?: { limit: number; offset: number };
     }
   }
 }
@@ -19,4 +20,6 @@ export interface RequestBody {
 export interface RequestQuery {
   taleId?: string;
   workflowId: string;
+  limit?: number;
+  offset?: number;
 }

@@ -38,6 +38,26 @@ const addFeedBack = async (
   }
 };
 
-export default { addFeedBack };
+const getFeedBacks = async (
+  userId: string,
+  taleId: string,
+  limit: number,
+  offset: number
+) => {
+  try {
+    if (!ObjectId.isValid(userId)) {
+      throw new Error("Invalid userId");
+    }
 
-// TODO: get api endpoint just use agreegation inside the same
+    const response = await feedbackModel
+      .find({ tale_id: taleId })
+      .limit(limit)
+      .skip(offset);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Something Went Wrong, huh!");
+  }
+};
+
+export default { addFeedBack, getFeedBacks };

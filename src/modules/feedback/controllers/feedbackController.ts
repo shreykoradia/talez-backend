@@ -67,4 +67,35 @@ const addFeedBack = async (
   }
 };
 
-export default { addFeedBack };
+const getFeedbacks = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
+  try {
+    console.log("hiii");
+    const taleId = req.query?.taleId;
+    const userId = req.user?.userId;
+    const limit = req.paginate?.limit as number;
+    const offset = req.paginate?.offset as number;
+
+    if (!userId) {
+      throw new Error("User not found!");
+    }
+
+    if (!taleId) {
+      throw new Error("Tale Id not found ");
+    }
+    const response = await feedbackServices.getFeedBacks(
+      userId,
+      taleId,
+      limit,
+      offset
+    );
+    res.status(200).json({ feedbacks: response });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error });
+  }
+};
+
+export default { addFeedBack, getFeedbacks };

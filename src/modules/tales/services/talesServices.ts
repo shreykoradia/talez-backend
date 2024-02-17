@@ -22,8 +22,6 @@ const createTales = async (
       throw new Error("User not found");
     }
 
-    const workflow = await userModel.findById(workflowId);
-
     if (!ObjectId.isValid(workflowId)) {
       throw new Error("Invalid workflowId");
     }
@@ -49,8 +47,26 @@ const createTales = async (
   }
 };
 
-// add upvote feedback service
+const getTales = async (
+  userId: string,
+  workflowId: string,
+  limit: number,
+  offset: number
+) => {
+  if (!ObjectId.isValid(userId)) {
+    throw Error("Invalid userId");
+  }
 
-// add downvote feedback service
+  try {
+    const response = await talesModel
+      .find({ workflow_id: workflowId })
+      .limit(limit)
+      .skip(offset);
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw Error("Something went wrong huh!");
+  }
+};
 
-export default { createTales };
+export default { createTales, getTales };
