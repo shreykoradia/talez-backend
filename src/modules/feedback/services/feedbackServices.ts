@@ -45,17 +45,19 @@ const getFeedBacks = async (
   offset: number
 ) => {
   try {
+    if (!ObjectId.isValid(userId)) {
+      throw new Error("Invalid userId");
+    }
+
+    const response = await feedbackModel
+      .find({ tale_id: taleId })
+      .limit(limit)
+      .skip(offset);
+    return response;
   } catch (error) {
     console.error(error);
     throw new Error("Something Went Wrong, huh!");
   }
-  const response = await feedbackModel
-    .find({ tale_id: taleId })
-    .limit(limit)
-    .skip(offset);
-  return response;
 };
 
 export default { addFeedBack, getFeedBacks };
-
-// TODO: get api endpoint just use agreegation inside the same
