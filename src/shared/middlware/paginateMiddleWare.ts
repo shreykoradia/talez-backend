@@ -5,7 +5,6 @@ export const paginateMiddleWare = (
   res: Response,
   next: NextFunction
 ) => {
-  // Check if paginate object exists
   if (!req.paginate) {
     req.paginate = {};
   }
@@ -15,10 +14,8 @@ export const paginateMiddleWare = (
   const defaultOffset = 0;
 
   // Parse limit and offset from query parameters
-  const limit =
-    (parseInt(req.query.limit) as number | undefined) || defaultLimit;
-  const offset =
-    (parseInt(req.query.offset) as number | undefined) || defaultOffset;
+  const limit = (parseInt(req.query.limit) as number) || defaultLimit;
+  const offset = (parseInt(req.query.offset) as number) || defaultOffset;
   req.pagination = { limit, offset };
 
   next();
