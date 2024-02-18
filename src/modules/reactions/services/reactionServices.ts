@@ -26,24 +26,24 @@ const upVote = async (
 
     // exisitng downVote
     const existingDownVote = await reactionModel.findOne({
-      talez_id,
-      workflow_id,
+      tale_id: talez_id,
+      workflow_id: workflow_id,
       author_id: userId,
       vote_type: "downvote",
     });
     if (existingDownVote) {
       await reactionModel.findOneAndDelete({
-        talez_id,
-        workflow_id,
+        tale_id: talez_id,
+        workflow_id: workflow_id,
         author_id: userId,
         vote_type: "downvote",
       });
     }
 
     const newUpVote = new reactionModel({
-      talez_id,
-      workflow_id,
-      authorName,
+      tale_id: talez_id,
+      workflow_id: workflow_id,
+      author_name: authorName,
       author_id: authorId,
       vote_type: userData,
     });
@@ -80,24 +80,24 @@ const downVote = async (
 
     // exisitng downVote
     const existingUpVote = await reactionModel.findOne({
-      talez_id,
-      workflow_id,
+      tale_id: talez_id,
+      workflow_id: workflow_id,
       author_id: userId,
       vote_type: "upvote",
     });
     if (existingUpVote) {
       await reactionModel.findOneAndDelete({
-        talez_id,
-        workflow_id,
+        tale_id: talez_id,
+        workflow_id: workflow_id,
         author_id: userId,
         vote_type: "upvote",
       });
     }
 
     const newDownVote = new reactionModel({
-      talez_id,
-      workflow_id,
-      authorName,
+      tale_id: talez_id,
+      workflow_id: workflow_id,
+      author_name: authorName,
       author_id: authorId,
       vote_type: userData,
     });
@@ -108,7 +108,23 @@ const downVote = async (
     throw new Error("Something Went Wrong!");
   }
 };
+const countReaction = async (userId: string, taleId: string) => {
+  try {
+    if (!ObjectId.isValid(userId)) {
+      throw Error("Invalid UserId");
+    }
+    const upvote_response = await reactionModel.find({
+      tale_id: taleId,
+      vote_type: "upvote",
+    });
+    const downvote_response = await reactionModel.find({
+      tale_id: taleId,
+      vote_type: "downvote",
+    });
+  } catch (error) {
+    console.error(error);
+    throw Error("Something Went Wrong, huh!");
+  }
+};
 
-// downvote
-
-export default { upVote, downVote };
+export default { upVote, downVote, countReaction };
