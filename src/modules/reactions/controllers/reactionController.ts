@@ -115,11 +115,11 @@ const countReaction = async (
       return;
     }
     const response = await reactionServices.countReaction(userId, taleId);
-    return response;
+    res.status(200).json({ countData: response });
   } catch (error) {
     console.error(error);
     res.status(400).json("Something Went Wrong Huh!");
   }
 };
 
-export default { upvote, downvote };
+export default { upvote, downvote, countReaction };

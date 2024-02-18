@@ -121,6 +121,11 @@ const countReaction = async (userId: string, taleId: string) => {
       tale_id: taleId,
       vote_type: "downvote",
     });
+    if (upvote_response.length > downvote_response.length) {
+      return { count: upvote_response.length, count_type: "upvote" };
+    } else {
+      return { count: downvote_response.length, count_type: "downvote" };
+    }
   } catch (error) {
     console.error(error);
     throw Error("Something Went Wrong, huh!");

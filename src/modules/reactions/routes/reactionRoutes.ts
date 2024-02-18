@@ -6,5 +6,6 @@ const router = express();
 
 router.post("/upvote", authenticateToken, reactionController.upvote);
 router.post("/downvote", authenticateToken, reactionController.downvote);
+router.get("/reactions", authenticateToken, reactionController.countReaction);
 
 export default router;
