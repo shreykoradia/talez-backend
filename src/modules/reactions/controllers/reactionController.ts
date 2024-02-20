@@ -115,7 +115,7 @@ const countReaction = async (
       return;
     }
     const response = await reactionServices.countReaction(userId, taleId);
-    res.status(200).json({ countData: response });
+    res.status(200).json({ response });
   } catch (error) {
     console.error(error);
     res.status(400).json("Something Went Wrong Huh!");
