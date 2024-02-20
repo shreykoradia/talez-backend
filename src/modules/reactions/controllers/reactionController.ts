@@ -101,4 +101,25 @@ const downvote = async (
   }
 };
 
-export default { upvote, downvote };
+const countReaction = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
+  try {
+    const userId = req?.user?.userId;
+    const taleId = req.query.taleId;
+    if (!userId) {
+      return;
+    }
+    if (!taleId) {
+      return;
+    }
+    const response = await reactionServices.countReaction(userId, taleId);
+    res.status(200).json({ response });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json("Something Went Wrong Huh!");
+  }
+};
+
+export default { upvote, downvote, countReaction };

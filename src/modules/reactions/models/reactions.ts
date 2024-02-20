@@ -2,15 +2,19 @@ import { Schema, model } from "mongoose";
 
 const reactionSchema = new Schema({
   author_id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: true,
   },
-  talez_id: {
-    type: Schema.Types.ObjectId,
+  author_name: {
+    type: String,
+    required: true,
+  },
+  tale_id: {
+    type: String,
     required: true,
   },
   workflow_id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     required: true,
   },
   vote_type: {
