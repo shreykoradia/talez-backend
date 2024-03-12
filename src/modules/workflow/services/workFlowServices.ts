@@ -40,12 +40,24 @@ const createWorkFlow = async (userId: string, validatedData: userData) => {
   }
 };
 
-const getAllWorkFlows = (userId: string, limit: number, offset: number) => {
-  const workflow = workFlowModel
-    .find({ authorId: userId })
-    .limit(limit)
-    .skip(offset);
-  return workflow;
+const getAllWorkFlows = async (
+  userId: string,
+  limit?: number,
+  offset?: number
+) => {
+  try {
+    let workflowQuery = workFlowModel.find({ authorId: userId });
+
+    if (limit !== undefined && offset !== undefined) {
+      workflowQuery = workflowQuery.limit(limit).skip(offset);
+    }
+
+    const workflows = await workflowQuery.exec();
+    return workflows;
+  } catch (error) {
+    console.error("Error occurred while fetching workflows:", error);
+    throw error;
+  }
 };
 
 export default { createWorkFlow, getAllWorkFlows };

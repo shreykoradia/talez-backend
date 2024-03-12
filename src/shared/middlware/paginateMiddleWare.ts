@@ -16,7 +16,7 @@ export const paginateMiddleWare = (
   // Parse limit and offset from query parameters
   const limit = (parseInt(req.query.limit) as number) || defaultLimit;
   const offset = (parseInt(req.query.offset) as number) || defaultOffset;
-  req.pagination = { limit, offset };
+  req.paginate = { limit, offset };
 
   next();
 };
