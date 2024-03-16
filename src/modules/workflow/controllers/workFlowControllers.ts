@@ -58,7 +58,7 @@ const getAllWorkFlows = async (req: Request, res: Response) => {
       limit,
       offset
     );
-    res.status(200).json({ workflows: response });
+    res.status(200).json(response);
   } catch (error) {
     console.error("Something Went Wrong Huh!", error);
     res.status(400).json("Something Went Wrong Huh!");

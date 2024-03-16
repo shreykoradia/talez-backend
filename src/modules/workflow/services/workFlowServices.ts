@@ -53,7 +53,19 @@ const getAllWorkFlows = async (
     }
 
     const workflows = await workflowQuery.exec();
-    return workflows;
+
+    const totalWorkflowsCount = await workFlowModel.countDocuments({
+      authorId: userId,
+    });
+
+    const totalPages = Math.ceil(totalWorkflowsCount / (limit || 12));
+
+    const response = {
+      totalPages: totalPages,
+      workflows: workflows,
+    };
+
+    return response;
   } catch (error) {
     console.error("Error occurred while fetching workflows:", error);
     throw error;
