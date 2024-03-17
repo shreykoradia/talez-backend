@@ -4,4 +4,5 @@ export type tale = {
   author_id: string;
   author_name: string;
   workflow_id: string;
+  created_at: Date;
 };

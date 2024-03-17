@@ -23,6 +23,10 @@ const taleSchema = new Schema<tale>({
     type: String,
     required: true,
   },
+  created_at: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const talesModel = model<tale>("tales", taleSchema);
