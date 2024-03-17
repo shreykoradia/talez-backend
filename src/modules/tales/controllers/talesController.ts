@@ -51,7 +51,7 @@ const createTales = async (req: Request, res: Response) => {
       return;
     }
 
-    const newTale = talesServices.createTales(
+    const newTale = await talesServices.createTales(
       userId,
       workflowId,
       validatedResult?.value
