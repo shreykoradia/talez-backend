@@ -47,6 +47,8 @@ const createTales = async (
   }
 };
 
+// getAllTales
+
 const getTales = async (
   userId: string,
   workflowId: string,
@@ -58,11 +60,22 @@ const getTales = async (
   }
 
   try {
+    const totalTalezCount = await talesModel.countDocuments({
+      workflow_id: workflowId,
+    });
+
+    const totalPages = Math.ceil(totalTalezCount / limit);
     const response = await talesModel
       .find({ workflow_id: workflowId })
       .limit(limit)
-      .skip(offset);
-    return response;
+      .skip(offset)
+      .exec();
+
+    const talesResponse = {
+      totalPages: totalPages,
+      tales: response,
+    };
+    return talesResponse;
   } catch (error) {
     console.error(error);
     throw Error("Something went wrong huh!");

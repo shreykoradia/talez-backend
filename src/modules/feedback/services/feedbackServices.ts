@@ -49,11 +49,22 @@ const getFeedBacks = async (
       throw new Error("Invalid userId");
     }
 
+    const feedbackTotalCount = await feedbackModel.countDocuments({
+      tale_id: taleId,
+    });
+
+    const totalPages = Math.ceil(feedbackTotalCount / limit);
+
     const response = await feedbackModel
       .find({ tale_id: taleId })
       .limit(limit)
-      .skip(offset);
-    return response;
+      .skip(offset)
+      .exec();
+    const feedbackResponse = {
+      totalPages: totalPages,
+      feedbacks: response,
+    };
+    return feedbackResponse;
   } catch (error) {
     console.error(error);
     throw new Error("Something Went Wrong, huh!");

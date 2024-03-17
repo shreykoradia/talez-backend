@@ -50,14 +50,15 @@ const getAllWorkFlows = async (req: Request, res: Response) => {
       throw Error("UserId does not exists");
     }
     // Access limit and offset from paginate object using optional chaining
-    const limit = req.paginate?.limit as number;
-    const offset = req.paginate?.offset as number;
+    const limit = req.paginate?.limit;
+    const offset = req.paginate?.offset;
+
     const response = await workFlowServices.getAllWorkFlows(
       userId,
       limit,
       offset
     );
-    res.status(200).json({ workflows: response });
+    res.status(200).json(response);
   } catch (error) {
     console.error("Something Went Wrong Huh!", error);
     res.status(400).json("Something Went Wrong Huh!");
