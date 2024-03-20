@@ -65,4 +65,21 @@ const getAllWorkFlows = async (req: Request, res: Response) => {
   }
 };
 
-export default { createWorkFlow, getAllWorkFlows };
+const getWorkflowById = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      throw Error("UserId does not exist");
+    }
+
+    const workflowId = req.params.workflowId; // Assuming workflowId is sent in the request parameters
+
+    const workflow = await workFlowServices.getWorkflowById(userId, workflowId);
+    res.status(200).json({ workflow });
+  } catch (error) {
+    console.error("Something Went Wrong Huh!", error);
+    res.status(400).json("Something Went Wrong Huh!");
+  }
+};
+
+export default { createWorkFlow, getAllWorkFlows, getWorkflowById };

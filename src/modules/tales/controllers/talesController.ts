@@ -3,7 +3,6 @@ import Joi from "joi";
 import talesServices from "../services/talesServices";
 import {
   RequestBody,
-  RequestParams,
   RequestQuery,
   ResponseBody,
 } from "../../../types/express";
@@ -86,4 +85,24 @@ const getTales = async (
   }
 };
 
-export default { createTales, getTales };
+interface RequestParams {
+  taleId: string;
+}
+
+const getTaleById = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
+  try {
+    const taleId = req.params.taleId; // Assuming taleId is sent in the request parameters
+    const userId = req?.user?.userId;
+
+    const tale = await talesServices.getTaleById(userId, taleId);
+    res.status(200).json({ tale });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "Failed to fetch tale" });
+  }
+};
+
+export default { createTales, getTales, getTaleById };

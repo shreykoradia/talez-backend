@@ -82,4 +82,30 @@ const getTales = async (
   }
 };
 
-export default { createTales, getTales };
+// getTalesById
+const getTaleById = async (userId: string, taleId: string) => {
+  if (!ObjectId.isValid(userId)) {
+    throw new Error("Invalid userId");
+  }
+
+  if (!ObjectId.isValid(taleId)) {
+    throw new Error("Invalid taleId");
+  }
+
+  try {
+    const tale = await talesModel.findOne({
+      _id: taleId,
+    });
+
+    if (!tale) {
+      throw new Error("Tale not found");
+    }
+
+    return tale;
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to fetch tale");
+  }
+};
+
+export default { createTales, getTales, getTaleById };

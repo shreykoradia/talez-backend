@@ -72,4 +72,29 @@ const getAllWorkFlows = async (
   }
 };
 
-export default { createWorkFlow, getAllWorkFlows };
+const getWorkflowById = async (userId: string, workflowId: string) => {
+  try {
+    if (!ObjectId.isValid(userId)) {
+      throw new Error("Invalid userId");
+    }
+
+    if (!ObjectId.isValid(workflowId)) {
+      throw new Error("Invalid workflowId");
+    }
+
+    const workflow = await workFlowModel.findOne({
+      _id: workflowId,
+    });
+
+    if (!workflow) {
+      throw new Error("Workflow not found");
+    }
+
+    return workflow;
+  } catch (error) {
+    console.error("Error occurred while fetching workflow:", error);
+    throw error;
+  }
+};
+
+export default { createWorkFlow, getAllWorkFlows, getWorkflowById };
