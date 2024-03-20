@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import Joi from "joi";
 import workFlowServices from "../services/workFlowServices";
+import {
+  RequestBody,
+  RequestParams,
+  RequestQuery,
+  ResponseBody,
+} from "../../../types/express";
 
 const createWorkFlow = async (req: Request, res: Response) => {
   const createWorkFlowSchema = Joi.object({
@@ -65,17 +71,25 @@ const getAllWorkFlows = async (req: Request, res: Response) => {
   }
 };
 
-const getWorkflowById = async (req: Request, res: Response) => {
+const getWorkflowById = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
   try {
     const userId = req.user?.userId;
+    const workflowId = req.query.workflowId;
     if (!userId) {
       throw Error("UserId does not exist");
     }
-
-    const workflowId = req.params.workflowId; // Assuming workflowId is sent in the request parameters
-
-    const workflow = await workFlowServices.getWorkflowById(userId, workflowId);
-    res.status(200).json({ workflow });
+    if (!workflowId) {
+      res.status(400).json("Workflow Id  required");
+    } else {
+      const workflow = await workFlowServices.getWorkflowById(
+        userId,
+        workflowId
+      );
+      res.status(200).json({ workflow });
+    }
   } catch (error) {
     console.error("Something Went Wrong Huh!", error);
     res.status(400).json("Something Went Wrong Huh!");

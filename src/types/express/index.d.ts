@@ -19,7 +19,7 @@ export interface RequestBody {
 
 export interface RequestQuery {
   taleId?: string;
-  workflowId: string;
+  workflowId?: string;
   limit?: number;
   offset?: number;
 }

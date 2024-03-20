@@ -3,6 +3,7 @@ import Joi from "joi";
 import talesServices from "../services/talesServices";
 import {
   RequestBody,
+  RequestParams,
   RequestQuery,
   ResponseBody,
 } from "../../../types/express";
@@ -72,33 +73,37 @@ const getTales = async (
     const limit = req?.paginate?.limit as number;
     const offset = req?.paginate?.offset as number;
 
-    const response = await talesServices.getTales(
-      userId,
-      workflowId,
-      limit,
-      offset
-    );
-    res.status(200).json({ tales: response });
+    if (!workflowId) {
+      res.status(400).json("Workflow Id Required");
+    } else {
+      const response = await talesServices.getTales(
+        userId,
+        workflowId,
+        limit,
+        offset
+      );
+      res.status(200).json({ tales: response });
+    }
   } catch (error) {
     console.error(error);
     res.status(400).json(error);
   }
 };
 
-interface RequestParams {
-  taleId: string;
-}
-
 const getTaleById = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
   res: Response
 ) => {
   try {
-    const taleId = req.params.taleId; // Assuming taleId is sent in the request parameters
+    const taleId = req?.query?.taleId;
     const userId = req?.user?.userId;
 
-    const tale = await talesServices.getTaleById(userId, taleId);
-    res.status(200).json({ tale });
+    if (!taleId) {
+      res.status(400).json("Tale Id Required");
+    } else {
+      const tale = await talesServices.getTaleById(userId, taleId);
+      res.status(200).json({ tale });
+    }
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: "Failed to fetch tale" });
