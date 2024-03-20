@@ -73,17 +73,41 @@ const getTales = async (
     const limit = req?.paginate?.limit as number;
     const offset = req?.paginate?.offset as number;
 
-    const response = await talesServices.getTales(
-      userId,
-      workflowId,
-      limit,
-      offset
-    );
-    res.status(200).json({ tales: response });
+    if (!workflowId) {
+      res.status(400).json("Workflow Id Required");
+    } else {
+      const response = await talesServices.getTales(
+        userId,
+        workflowId,
+        limit,
+        offset
+      );
+      res.status(200).json({ tales: response });
+    }
   } catch (error) {
     console.error(error);
     res.status(400).json(error);
   }
 };
 
-export default { createTales, getTales };
+const getTaleById = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
+  try {
+    const taleId = req?.query?.taleId;
+    const userId = req?.user?.userId;
+
+    if (!taleId) {
+      res.status(400).json("Tale Id Required");
+    } else {
+      const tale = await talesServices.getTaleById(userId, taleId);
+      res.status(200).json({ tale });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "Failed to fetch tale" });
+  }
+};
+
+export default { createTales, getTales, getTaleById };
