@@ -51,7 +51,7 @@ const addFeedBack = async (
 
     if (!taleId) return;
 
-    const newFeedback = feedbackServices.addFeedBack(
+    const newFeedback = await feedbackServices.addFeedBack(
       userId,
       taleId,
       validatedResult?.value
@@ -59,7 +59,9 @@ const addFeedBack = async (
     if (!newFeedback) {
       return;
     } else {
-      res.status(201).json({ newFeedback, msg: "Tale successfully created" });
+      res
+        .status(201)
+        .json({ newFeedback: newFeedback, msg: "Feedback successfully Added" });
     }
   } catch (error) {
     console.error("Something Went Wrong!", error);
