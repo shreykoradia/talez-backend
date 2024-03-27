@@ -40,6 +40,8 @@ const upvote = async (
       res
         .status(400)
         .json({ res: existingUpVote, msg: "Upvote by User Already Exists" });
+    } else if (!workflow_id) {
+      res.status(400).json("Workflow Id Required");
     } else {
       const response = await reactionServices.upVote(
         userId,
@@ -86,15 +88,17 @@ const downvote = async (
       res
         .status(400)
         .json({ res: existingDownVote, msg: "Downvote Already Exists" });
+    } else if (!workflow_id) {
+      res.status(400).json("Workflow Id Requried");
+    } else {
+      const response = await reactionServices.downVote(
+        userId,
+        talez_id,
+        workflow_id,
+        userData?.vote_type
+      );
+      res.status(201).json({ response, msg: "downvoted successfully" });
     }
-
-    const response = await reactionServices.downVote(
-      userId,
-      talez_id,
-      workflow_id,
-      userData?.vote_type
-    );
-    res.status(201).json({ response, msg: "downvoted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json("Something Went Wrong!");

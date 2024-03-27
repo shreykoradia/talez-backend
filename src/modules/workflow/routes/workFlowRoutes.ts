@@ -16,4 +16,16 @@ router.get(
   paginateMiddleWare,
   workFlowControllers.getAllWorkFlows
 );
+// router.get(
+//   "/get-workflowbyid/:workflowId",
+//   authenticateToken,
+//   workFlowControllers.getWorkflowById
+// );
+
+router.get(
+  "/get-workflow",
+  authenticateToken,
+  workFlowControllers.getWorkflowById
+);
+
 export default router;
