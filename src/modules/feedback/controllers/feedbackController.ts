@@ -9,7 +9,8 @@ interface ResponseBody {}
 interface RequestBody {}
 
 interface RequestQuery {
-  taleId: string;
+  taleId?: string;
+  feedbackId?: string;
 }
 
 const addFeedBack = async (
@@ -99,4 +100,27 @@ const getFeedbacks = async (
   }
 };
 
-export default { addFeedBack, getFeedbacks };
+const getFeedbackById = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
+  try {
+    const feedbackId = req.query.feedbackId;
+    const userId = req.user?.userId;
+    if (!userId) {
+      throw new Error("User not found!");
+    }
+
+    if (!feedbackId) {
+      throw new Error("Tale Id not found ");
+    }
+
+    const response = await feedbackServices.getFeedbackById(feedbackId, userId);
+    res.status(200).json({ feedback: response });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error });
+  }
+};
+
+export default { addFeedBack, getFeedbacks, getFeedbackById };

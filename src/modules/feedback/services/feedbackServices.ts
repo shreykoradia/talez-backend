@@ -71,4 +71,17 @@ const getFeedBacks = async (
   }
 };
 
-export default { addFeedBack, getFeedBacks };
+const getFeedbackById = async (feedbackId: string, userId: string) => {
+  try {
+    if (!ObjectId.isValid(userId)) {
+      throw new Error("Invalid userId");
+    }
+    const response = await feedbackModel.findOne({ _id: feedbackId });
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something Went Wrong, huh!");
+  }
+};
+
+export default { addFeedBack, getFeedBacks, getFeedbackById };

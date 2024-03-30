@@ -12,5 +12,10 @@ router.get(
   paginateMiddleWare,
   feedbackController.getFeedbacks
 );
+router.get(
+  "/get-feedback",
+  authenticateToken,
+  feedbackController.getFeedbackById
+);
 
 export default router;
