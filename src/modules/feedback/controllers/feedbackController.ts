@@ -74,7 +74,6 @@ const getFeedbacks = async (
   res: Response
 ) => {
   try {
-    console.log("hiii");
     const taleId = req.query?.taleId;
     const userId = req.user?.userId;
     const limit = req.paginate?.limit as number;

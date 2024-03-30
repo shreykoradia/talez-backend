@@ -7,7 +7,7 @@ const router = express();
 
 router.post("/add-feedback", authenticateToken, feedbackController.addFeedBack);
 router.get(
-  "/get-feedback",
+  "/get-feedbacks",
   authenticateToken,
   paginateMiddleWare,
   feedbackController.getFeedbacks

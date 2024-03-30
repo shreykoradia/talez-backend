@@ -12,11 +12,6 @@ router.get(
   paginateMiddleWare,
   talesController.getTales
 );
-// router.get(
-//   "/get-talesbyid/:taleId",
-//   authenticateToken,
-//   talesController.getTaleById
-// );
 router.get("/get-tale", authenticateToken, talesController.getTaleById);
 
 export default router;
