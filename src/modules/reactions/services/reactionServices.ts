@@ -6,7 +6,7 @@ import reactionModel from "../models/reactions";
 const upVote = async (
   userId: string,
   talez_id: string,
-  workflow_id: string,
+  feedback_id: string,
   userData: string
 ) => {
   try {
@@ -27,23 +27,23 @@ const upVote = async (
     // exisitng downVote
     const existingDownVote = await reactionModel.findOne({
       tale_id: talez_id,
-      workflow_id: workflow_id,
+      feedback_id: feedback_id,
       author_id: userId,
       vote_type: "downvote",
     });
     if (existingDownVote) {
       await reactionModel.findOneAndDelete({
         tale_id: talez_id,
-        workflow_id: workflow_id,
         author_id: userId,
+        feedback_id: feedback_id,
         vote_type: "downvote",
       });
     }
 
     const newUpVote = new reactionModel({
       tale_id: talez_id,
-      workflow_id: workflow_id,
       author_name: authorName,
+      feedback_id: feedback_id,
       author_id: authorId,
       vote_type: userData,
     });
@@ -60,7 +60,7 @@ const upVote = async (
 const downVote = async (
   userId: string,
   talez_id: string,
-  workflow_id: string,
+  feedbackId: string,
   userData: string
 ) => {
   try {
@@ -81,24 +81,24 @@ const downVote = async (
     // exisitng downVote
     const existingUpVote = await reactionModel.findOne({
       tale_id: talez_id,
-      workflow_id: workflow_id,
       author_id: userId,
+      feedback_id: feedbackId,
       vote_type: "upvote",
     });
     if (existingUpVote) {
       await reactionModel.findOneAndDelete({
         tale_id: talez_id,
-        workflow_id: workflow_id,
         author_id: userId,
+        feedback_id: feedbackId,
         vote_type: "upvote",
       });
     }
 
     const newDownVote = new reactionModel({
       tale_id: talez_id,
-      workflow_id: workflow_id,
       author_name: authorName,
       author_id: authorId,
+      feedback_id: feedbackId,
       vote_type: userData,
     });
     await newDownVote.save();
@@ -108,17 +108,17 @@ const downVote = async (
     throw new Error("Something Went Wrong!");
   }
 };
-const countReaction = async (userId: string, taleId: string) => {
+const countReaction = async (userId: string, feedbackId: string) => {
   try {
     if (!ObjectId.isValid(userId)) {
       throw Error("Invalid UserId");
     }
     const upvote_response = await reactionModel.find({
-      tale_id: taleId,
+      feedback_id: feedbackId,
       vote_type: "upvote",
     });
     const downvote_response = await reactionModel.find({
-      tale_id: taleId,
+      feedback_id: feedbackId,
       vote_type: "downvote",
     });
     if (upvote_response.length > downvote_response.length) {

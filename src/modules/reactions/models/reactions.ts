@@ -13,7 +13,7 @@ const reactionSchema = new Schema({
     type: String,
     required: true,
   },
-  workflow_id: {
+  feedback_id: {
     type: String,
     required: true,
   },

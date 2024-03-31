@@ -15,11 +15,13 @@ export interface ResponseBody {}
 
 export interface RequestBody {
   vote_type: any;
+  feedbackId: string;
 }
 
 export interface RequestQuery {
   taleId?: string;
   workflowId?: string;
+  feedbackId?: string;
   limit?: number;
   offset?: number;
 }

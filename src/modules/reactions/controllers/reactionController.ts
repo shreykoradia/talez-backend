@@ -16,22 +16,23 @@ const upvote = async (
   try {
     const userData = req.body;
     const userId = req.user?.userId;
-    const talez_id = req?.query?.taleId;
-    const workflow_id = req?.query?.workflowId;
+    const taleId = req?.query?.taleId;
 
     if (!userId) {
-      throw Error("UserId requirede");
+      res.status(400).json("UserId required");
     }
-    if (!talez_id) {
-      throw Error("taleId requirede");
+    if (!taleId) {
+      res.status(400).json("taleId required");
+      return;
     }
+
     if (userData?.vote_type !== "upvote") {
-      throw Error("Upvote Requried");
+      res.status(400).json("Upvote Requried");
     }
 
     const existingUpVote = await reactionModel.findOne({
-      talez_id,
-      workflow_id,
+      tale_id: taleId,
+      feedback_id: userData?.feedbackId,
       author_id: userId,
       vote_type: "upvote",
     });
@@ -40,13 +41,11 @@ const upvote = async (
       res
         .status(400)
         .json({ res: existingUpVote, msg: "Upvote by User Already Exists" });
-    } else if (!workflow_id) {
-      res.status(400).json("Workflow Id Required");
     } else {
       const response = await reactionServices.upVote(
         userId,
-        talez_id,
-        workflow_id,
+        taleId,
+        userData?.feedbackId,
         userData?.vote_type
       );
       res.status(201).json({ response, msg: "upvoted successfully" });
@@ -65,12 +64,13 @@ const downvote = async (
     const userData = req.body;
     const userId = req.user?.userId;
     const talez_id = req?.query?.taleId;
-    const workflow_id = req?.query?.workflowId;
 
     if (!userId) {
+      res.status(500).json("UserId Required");
       return;
     }
     if (!talez_id) {
+      res.status(400).json("Tale Id Required");
       return;
     }
     if (userData?.vote_type !== "downvote") {
@@ -78,9 +78,9 @@ const downvote = async (
     }
 
     const existingDownVote = await reactionModel.findOne({
-      talez_id,
-      workflow_id,
+      tale_id: talez_id,
       author_id: userId,
+      feedback_id: userData?.feedbackId,
       vote_type: "downvote",
     });
 
@@ -88,13 +88,11 @@ const downvote = async (
       res
         .status(400)
         .json({ res: existingDownVote, msg: "Downvote Already Exists" });
-    } else if (!workflow_id) {
-      res.status(400).json("Workflow Id Requried");
     } else {
       const response = await reactionServices.downVote(
         userId,
         talez_id,
-        workflow_id,
+        userData?.feedbackId,
         userData?.vote_type
       );
       res.status(201).json({ response, msg: "downvoted successfully" });
@@ -111,14 +109,14 @@ const countReaction = async (
 ) => {
   try {
     const userId = req?.user?.userId;
-    const taleId = req.query.taleId;
+    const feedbackId = req.query.feedbackId;
     if (!userId) {
       return;
     }
-    if (!taleId) {
+    if (!feedbackId) {
       return;
     }
-    const response = await reactionServices.countReaction(userId, taleId);
+    const response = await reactionServices.countReaction(userId, feedbackId);
     res.status(200).json({ response });
   } catch (error) {
     console.error(error);
