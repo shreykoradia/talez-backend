@@ -120,8 +120,34 @@ const countReaction = async (
     res.status(200).json({ response });
   } catch (error) {
     console.error(error);
-    res.status(400).json("Something Went Wrong Huh!");
+    res.status(500).json("Something Went Wrong Huh!");
   }
 };
 
-export default { upvote, downvote, countReaction };
+const voteByFeedbackId = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
+  try {
+    const userId = req?.user?.userId;
+    const feedbackId = req.query.feedbackId;
+    if (!userId) {
+      res.status(400).json("UserId is required");
+      return;
+    }
+    if (!feedbackId) {
+      res.status(400).json("Feedback Id required");
+      return;
+    }
+    const response = await reactionServices.voteByFeedbackId(
+      feedbackId,
+      userId
+    );
+    res.status(200).json({ vote_type: response });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json("Something Went Wrong huh!");
+  }
+};
+
+export default { upvote, downvote, countReaction, voteByFeedbackId };
