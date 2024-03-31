@@ -11,5 +11,9 @@ router.get(
   authenticateToken,
   reactionController.countReaction
 );
-
+router.get(
+  "/reaction-type",
+  authenticateToken,
+  reactionController.voteByFeedbackId
+);
 export default router;

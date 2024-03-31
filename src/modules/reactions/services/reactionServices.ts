@@ -132,4 +132,22 @@ const countReaction = async (userId: string, feedbackId: string) => {
   }
 };
 
-export default { upVote, downVote, countReaction };
+const voteByFeedbackId = async (feedbackId: string, userId: string) => {
+  try {
+    if (!ObjectId.isValid(userId)) {
+      throw Error("Invalid UserId");
+    }
+
+    const response = await reactionModel.findOne({
+      feedback_id: feedbackId,
+      author_id: userId,
+    });
+
+    return response;
+  } catch (error) {
+    console.error(error);
+    throw Error("Something Went Wrong, huh!");
+  }
+};
+
+export default { upVote, downVote, countReaction, voteByFeedbackId };
