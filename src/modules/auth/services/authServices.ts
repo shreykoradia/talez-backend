@@ -49,4 +49,15 @@ const login = async (userData: any) => {
   }
 };
 
-export default { signUp, login };
+const getUserById = async (userId: string) => {
+  try {
+    if (!userId) return;
+    const getUser = await userModel.findById(userId);
+    return getUser;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export default { signUp, login, getUserById };
