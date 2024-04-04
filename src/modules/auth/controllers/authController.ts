@@ -95,4 +95,15 @@ const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export default { signUp, login };
+const getUserDetail = async (req: Request, res: Response) => {
+  try {
+    const userId = req?.user?.userId;
+    const response = await authServices.getUserById(userId);
+    res.status(200).json({ user: response });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(`Something Went Wrong!`);
+  }
+};
+
+export default { signUp, login, getUserDetail };
