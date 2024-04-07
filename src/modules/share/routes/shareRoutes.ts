@@ -12,3 +12,5 @@ router.post("/invite-user/", authenticateToken, shareController.inviteUser);
 // remove  the user access
 
 //get all the details of the user with the access
+
+export default router;

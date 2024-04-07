@@ -6,6 +6,7 @@ import {
   ResponseBody,
 } from "../../../types/express";
 import Joi from "joi";
+import shareServices from "../services/shareServices";
 
 const inviteUser = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
@@ -20,7 +21,7 @@ const inviteUser = async (
   });
   try {
     const userId = req.user?.userId;
-    const workflowId = req.query?.workflowId;
+    const workflowId = req.query?.workflowId || "";
     const userData = req.body;
     const validatedResult = inviteUserValidationSchema.validate(userData, {
       abortEarly: false,
@@ -35,7 +36,16 @@ const inviteUser = async (
     }
     const validatedData = validatedResult.value;
 
-    // const response = await shareServices.inviteUser(validatedData , workflow)
+    if (!workflowId) res.status(400).json("Requires a Workflow Id");
+
+    const response = await shareServices.inviteUser(
+      workflowId,
+      userId,
+      validatedData
+    );
+    res
+      .status(200)
+      .json({ invitedUser: response, msg: "Invite Added Successfully" });
   } catch (error) {
     console.log("Something Went Wrong!", error);
     res.status(500).json("Something Went Wrong Huh!");
