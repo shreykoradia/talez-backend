@@ -1,10 +1,15 @@
 import userModel from "../../auth/models/users";
 import shareModel from "../models/share";
 
+interface userDataProps {
+  email: string;
+  role: string;
+}
+
 const inviteUser = async (
   workflowId: string,
   userId: string,
-  userData: any
+  userData: userDataProps
 ) => {
   if (!userId) return;
   if (!workflowId) return;

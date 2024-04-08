@@ -7,7 +7,7 @@ import talesModel from "../models/tales";
 
 const createTales = async (
   userId: string,
-  workflowId: any,
+  workflowId: string,
   validatedData: tale
 ) => {
   try {

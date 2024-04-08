@@ -1,4 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
+import { Share } from "../types";
 
 const shareSchema = new Schema({
   workflow: {
@@ -34,6 +35,6 @@ shareSchema.virtual("shared_to_user", {
   justOne: true,
 });
 
-const shareModel = model("share", shareSchema);
+const shareModel = model<Share>("share", shareSchema);
 
 export default shareModel;

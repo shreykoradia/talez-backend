@@ -8,7 +8,10 @@ import {
   ResponseBody,
 } from "../../../types/express";
 
-const createTales = async (req: Request, res: Response) => {
+const createTales = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
   const taleValidationSchema = Joi.object({
     title: Joi.string().trim().min(1).max(50).required().label("title"),
     description: Joi.string()
@@ -21,7 +24,7 @@ const createTales = async (req: Request, res: Response) => {
   try {
     const talesData = req.body;
     const userId = req?.user?.userId;
-    const workflowId = req?.query?.workflowId;
+    const workflowId = req.query?.workflowId || "";
 
     if (!userId) {
       throw new Error("UserId not found!");
