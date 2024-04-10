@@ -44,4 +44,38 @@ const inviteUser = async (
   }
 };
 
-export default { inviteUser };
+const getUsersWithAccess = async (userId: string, workflowId: string) => {
+  try {
+    if (!userId) {
+      throw Error("UserId not found");
+    }
+    if (!workflowId) {
+      throw Error("Workflow Id not found");
+    }
+    const response = await shareModel.find({ workflow: workflowId });
+    const enrichedResponse = await Promise.all(
+      response.map(async (share) => {
+        const user = await userModel.findOne({ email: share.shared_to });
+        if (user) {
+          const { shared_to, ...shareWithoutSharedTo } = share.toObject();
+          return {
+            ...shareWithoutSharedTo,
+            shared_to: {
+              _id: user._id,
+              username: user.username,
+              email: user.email,
+            },
+          };
+        }
+        return share;
+      })
+    );
+
+    return enrichedResponse;
+  } catch (error) {
+    console.log(error);
+    throw Error("Something went wrong, Huh!");
+  }
+};
+
+export default { inviteUser, getUsersWithAccess };

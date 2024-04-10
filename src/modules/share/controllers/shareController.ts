@@ -52,4 +52,29 @@ const inviteUser = async (
   }
 };
 
-export default { inviteUser };
+const getUsersWithAccess = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
+  try {
+    const userId = req?.user?.userId;
+    const workflowId = req?.query?.workflowId || "";
+
+    if (!userId) {
+      res.status(400).json("User Id not found");
+    }
+
+    if (!workflowId) {
+      res.status(400).json("Workflow Id required");
+    }
+
+    const response = await shareServices.getUsersWithAccess(userId, workflowId);
+    console.log(response);
+    res.status(200).json({ shared_users: response });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json("Something Went Wrong!");
+  }
+};
+
+export default { inviteUser, getUsersWithAccess };

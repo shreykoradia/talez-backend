@@ -8,6 +8,11 @@ const router = express();
 router.post("/invite-user/", authenticateToken, shareController.inviteUser);
 
 // update the access of the user
+router.get(
+  "/get-users/",
+  authenticateToken,
+  shareController.getUsersWithAccess
+);
 
 // remove  the user access
 
