@@ -4,18 +4,20 @@ import shareController from "../controllers/shareController";
 
 const router = express();
 
-// inivte the user with the workflow id
 router.post("/invite-user/", authenticateToken, shareController.inviteUser);
-
-// update the access of the user
 router.get(
   "/get-users/",
   authenticateToken,
   shareController.getUsersWithAccess
 );
-
-// remove  the user access
-
-//get all the details of the user with the access
-
+router.patch(
+  "/update-access/",
+  authenticateToken,
+  shareController.updateAccess
+);
+// router.delete(
+//   "/remove-access",
+//   authenticateToken,
+//   shareController.removeAccess
+// );
 export default router;

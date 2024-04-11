@@ -78,4 +78,29 @@ const getUsersWithAccess = async (userId: string, workflowId: string) => {
   }
 };
 
-export default { inviteUser, getUsersWithAccess };
+const updateAccess = async (
+  userId: string,
+  workflowId: string,
+  userData: userDataProps
+) => {
+  try {
+    if (!userId) {
+      throw Error("UserId not found");
+    }
+    if (!workflowId) {
+      throw Error("UserId not found");
+    }
+    const userWithAcces = await shareModel.findOne({
+      shared_to: userData?.email,
+      workflow: workflowId,
+    });
+
+    const response = { ...userWithAcces, role: userData?.role };
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw Error("Something Went Wrong Huh!");
+  }
+};
+
+export default { inviteUser, getUsersWithAccess, updateAccess };
