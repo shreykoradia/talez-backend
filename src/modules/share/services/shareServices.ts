@@ -103,4 +103,23 @@ const updateAccess = async (
   }
 };
 
-export default { inviteUser, getUsersWithAccess, updateAccess };
+const removeAccess = async (
+  workflowId: string,
+  userData: { email: string }
+) => {
+  try {
+    if (!workflowId) {
+      throw Error("WorkflowId is Required");
+    }
+    const removedSharedUser = await shareModel.findOneAndDelete({
+      email: userData.email,
+      workflow: workflowId,
+    });
+    return removedSharedUser;
+  } catch (error) {
+    console.log(error);
+    throw Error("Something Went Wrong!");
+  }
+};
+
+export default { inviteUser, getUsersWithAccess, updateAccess, removeAccess };

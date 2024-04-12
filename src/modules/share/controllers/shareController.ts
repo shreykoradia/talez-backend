@@ -118,15 +118,46 @@ const updateAccess = async (
   }
 };
 
-// const removeAccess = async (
-//   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-//   res: Response
-// ) => {
-//   try {
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json("Something Went Wrong Huh!");
-//   }
-// };
+const removeAccess = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
+  const removeValidationSchema = Joi.object({
+    email: Joi.string().trim().email().required().label("Email"),
+  });
+  try {
+    const userId = req.user?.userId;
+    const userData = req?.body;
+    const workflowId = req.query?.workflowId || "";
+    const validatedResult = removeValidationSchema.validate(userData, {
+      abortEarly: false,
+    });
+    if (!userId) {
+      res.status(400).json("UserId is Required");
+    }
+    if (!workflowId) {
+      res.status(422).json("WorkflowId is Required");
+    }
+    if (validatedResult.error) {
+      const errors = validatedResult.error.details.map((detail) => ({
+        field: detail?.context?.key,
+        message: detail?.message,
+      }));
+      res.status(422).json(errors);
+      return;
+    }
+    const validatedData = validatedResult.value;
+    const response = await shareServices.removeAccess(
+      workflowId,
+      validatedData
+    );
+    res
+      .status(200)
+      .json({ msg: "Removed User Successfully", removed_user: response });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json("Something Went Wrong Huh!");
+  }
+};
 
-export default { inviteUser, getUsersWithAccess, updateAccess };
+export default { inviteUser, getUsersWithAccess, updateAccess, removeAccess };
