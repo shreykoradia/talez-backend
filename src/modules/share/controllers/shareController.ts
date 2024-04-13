@@ -69,7 +69,6 @@ const getUsersWithAccess = async (
     }
 
     const response = await shareServices.getUsersWithAccess(userId, workflowId);
-    console.log(response);
     res.status(200).json({ shared_users: response });
   } catch (error) {
     console.log(error);
