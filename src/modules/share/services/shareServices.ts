@@ -90,13 +90,13 @@ const updateAccess = async (
     if (!workflowId) {
       throw Error("UserId not found");
     }
-    const userWithAcces = await shareModel.findOne({
-      shared_to: userData?.email,
-      workflow: workflowId,
-    });
-
-    const response = { ...userWithAcces, role: userData?.role };
-    return response;
+    await shareModel.updateOne(
+      {
+        shared_to: userData?.email,
+        workflow: workflowId,
+      },
+      { $set: { role: userData?.role } }
+    );
   } catch (error) {
     console.log(error);
     throw Error("Something Went Wrong Huh!");
@@ -112,9 +112,10 @@ const removeAccess = async (
       throw Error("WorkflowId is Required");
     }
     const removedSharedUser = await shareModel.findOneAndDelete({
-      email: userData.email,
+      shared_to: userData.email,
       workflow: workflowId,
     });
+
     return removedSharedUser;
   } catch (error) {
     console.log(error);
