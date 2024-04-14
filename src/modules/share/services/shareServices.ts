@@ -112,7 +112,7 @@ const removeAccess = async (
       throw Error("WorkflowId is Required");
     }
     const removedSharedUser = await shareModel.findOneAndDelete({
-      shared_to: userData.email,
+      shared_to: userData?.email,
       workflow: workflowId,
     });
 
