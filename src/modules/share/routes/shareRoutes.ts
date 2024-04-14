@@ -15,9 +15,5 @@ router.patch(
   authenticateToken,
   shareController.updateAccess
 );
-router.delete(
-  "/remove-access",
-  authenticateToken,
-  shareController.removeAccess
-);
+router.post("/remove-access/", authenticateToken, shareController.removeAccess);
 export default router;
