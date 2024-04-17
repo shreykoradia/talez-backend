@@ -7,6 +7,7 @@ import {
 } from "../../types/express";
 import shareModel from "../../modules/share/models/share";
 import talesModel from "../../modules/tales/models/tales";
+import workFlowModel from "../../modules/workflow/models/workFlow";
 
 export const checkRole =
   (requiredRole: Array<string>) =>
@@ -26,10 +27,16 @@ export const checkRole =
       shared_to: user?.email,
       workflow: workflowId || getWorkFlowId,
     });
+    const getWorkflow = await workFlowModel.findOne({
+      _id: workflowId || getWorkFlowId,
+    });
     const userRole = getSharedDocument?.role;
+
     const hasRequriedRole = userRole && requiredRole.includes(userRole);
 
-    if (hasRequriedRole) {
+    const isUserOwner = getWorkflow?.authorId === req?.user?.userId;
+
+    if (hasRequriedRole || isUserOwner) {
       next();
     } else {
       res.status(403).json("User UnAuthorised or have No Access");
