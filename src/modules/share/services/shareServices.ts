@@ -16,13 +16,15 @@ const inviteUser = async (
 
   const sharedBy = await userModel.findById(userId);
 
+  // invited user exists inside talez app
   const invitedUserExist = await userModel.findOne({
     email: userData?.email,
   });
 
   if (invitedUserExist) {
+    // if invitedUser is a part of workflow or document
     const invitedUser = await shareModel.findOne({
-      shared_to: invitedUserExist?.email,
+      shared_to: invitedUserExist?._id,
     });
 
     if (invitedUser) {
@@ -30,7 +32,7 @@ const inviteUser = async (
     }
 
     const invite = new shareModel({
-      shared_to: userData?.email,
+      shared_to: invitedUserExist?._id,
       role: userData?.role,
       shared_by: sharedBy?._id,
       workflow: workflowId,
@@ -55,7 +57,7 @@ const getUsersWithAccess = async (userId: string, workflowId: string) => {
     const response = await shareModel.find({ workflow: workflowId });
     const enrichedResponse = await Promise.all(
       response.map(async (share) => {
-        const user = await userModel.findOne({ email: share.shared_to });
+        const user = await userModel.findById(share.shared_to);
         if (user) {
           const { shared_to, ...shareWithoutSharedTo } = share.toObject();
           return {
@@ -90,9 +92,10 @@ const updateAccess = async (
     if (!workflowId) {
       throw Error("UserId not found");
     }
+    const userDetails = await userModel.findOne({ email: userData?.email });
     await shareModel.updateOne(
       {
-        shared_to: userData?.email,
+        shared_to: userDetails?._id,
         workflow: workflowId,
       },
       { $set: { role: userData?.role } }
@@ -111,8 +114,9 @@ const removeAccess = async (
     if (!workflowId) {
       throw Error("WorkflowId is Required");
     }
+    const userDetails = await userModel.findOne({ email: userData?.email });
     const removedSharedUser = await shareModel.findOneAndDelete({
-      shared_to: userData?.email,
+      shared_to: userDetails?._id,
       workflow: workflowId,
     });
 
