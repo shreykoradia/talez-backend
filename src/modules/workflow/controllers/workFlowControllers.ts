@@ -49,7 +49,10 @@ const createWorkFlow = async (req: Request, res: Response) => {
   }
 };
 
-const getAllWorkFlows = async (req: Request, res: Response) => {
+const getAllWorkFlows = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response
+) => {
   try {
     const userId = req.user?.userId;
     if (!userId) {

@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import userModel from "../../auth/models/users";
 import workFlowModel from "../models/workFlow";
+import shareModel from "../../share/models/share";
 
 interface userData {
   workFlowTitle: string;
@@ -48,21 +49,43 @@ const getAllWorkFlows = async (
   try {
     let workflowQuery = workFlowModel.find({ authorId: userId });
 
+    // checking for if any shared workflow is there
+    const sharedWorkflows = await shareModel.find({
+      shared_to: userId,
+    });
+
+    // mapping all shared workflow ids
+    const sharedWorkflowIds = sharedWorkflows?.map((sw) => sw.workflow) || [];
+
+    let sharedWorkflowQuery = workFlowModel.find({
+      _id: { $in: sharedWorkflowIds },
+    });
+
     if (limit !== undefined && offset !== undefined) {
       workflowQuery = workflowQuery.limit(limit).skip(offset);
+      sharedWorkflowQuery.limit(limit).skip(offset);
     }
 
     const workflows = await workflowQuery.exec();
+    const sharedWorkflowList = await sharedWorkflowQuery.exec();
 
-    const totalWorkflowsCount = await workFlowModel.countDocuments({
+    const combinedWorkflows = [...workflows, ...sharedWorkflowList];
+
+    const totalUserWorkflowsCount = await workFlowModel.countDocuments({
       authorId: userId,
     });
 
-    const totalPages = Math.ceil(totalWorkflowsCount / (limit || 12));
+    const totalSharedWorkflowsCount = await workFlowModel.countDocuments({
+      _id: { $in: sharedWorkflowIds },
+    });
+
+    const totalWorkflowsCount =
+      totalUserWorkflowsCount + totalSharedWorkflowsCount;
+    const totalPages = Math.ceil(totalWorkflowsCount / (limit || 6));
 
     const response = {
       totalPages: totalPages,
-      workflows: workflows,
+      workflows: combinedWorkflows,
     };
 
     return response;
