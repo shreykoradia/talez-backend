@@ -14,7 +14,7 @@ const createWorkFlow = async (req: Request, res: Response) => {
     description: Joi.string()
       .trim()
       .min(1)
-      .max(250)
+      .max(1000)
       .required()
       .label("description"),
   });
@@ -45,7 +45,7 @@ const createWorkFlow = async (req: Request, res: Response) => {
     res.status(201).json({ data: createWorkFlowData });
   } catch (error) {
     console.error("Something Went Wrong!", error);
-    throw error;
+    res.status(500).json("Something Went Wrong Huh!");
   }
 };
 
@@ -70,7 +70,7 @@ const getAllWorkFlows = async (
     res.status(200).json(response);
   } catch (error) {
     console.error("Something Went Wrong Huh!", error);
-    res.status(400).json("Something Went Wrong Huh!");
+    res.status(500).json("Something Went Wrong Huh!");
   }
 };
 

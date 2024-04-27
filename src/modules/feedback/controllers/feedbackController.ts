@@ -18,7 +18,7 @@ const addFeedBack = async (
   res: Response
 ) => {
   const feedbackValidationSchema = Joi.object({
-    feedback: Joi.string().trim().min(1).max(250).required().label("title"),
+    feedback: Joi.string().trim().min(1).max(500).required().label("title"),
   });
   try {
     const talesData = req.body;

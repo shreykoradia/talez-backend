@@ -17,7 +17,7 @@ const createTales = async (
     description: Joi.string()
       .trim()
       .min(1)
-      .max(1000)
+      .max(5000)
       .required()
       .label("description"),
   });
