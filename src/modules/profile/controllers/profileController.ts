@@ -6,7 +6,7 @@ const updateProfileHeader = async (req: any, res: Response): Promise<void> => {
   const updateProfileSchema = Joi.object({
     username: Joi.string().trim().min(3).max(15).optional().label("Username"),
     email: Joi.string().trim().email().optional().label("Email"),
-    status: Joi.string().trim().max(280).optional().label("Status"),
+    status: Joi.string().trim().max(280).optional().empty("").label("Status"),
   });
   try {
     const userId = req.user?.userId;
@@ -36,6 +36,7 @@ const updateProfileHeader = async (req: any, res: Response): Promise<void> => {
   } catch (errors) {
     console.log("Something Went Wrong!", errors);
     res.status(500).json({ errors });
+    return;
   }
 };
 

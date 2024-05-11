@@ -52,7 +52,6 @@ const getUserById = async (userId: string) => {
   try {
     if (!userId) return;
     const getUser = await userModel.findById(userId, { password: 0 });
-
     return getUser;
   } catch (error) {
     console.log(error);
