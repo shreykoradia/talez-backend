@@ -7,6 +7,7 @@ import {
   RequestQuery,
   ResponseBody,
 } from "../../../types/express";
+import workFlowModel from "../models/workFlow";
 
 const createWorkFlow = async (req: Request, res: Response) => {
   const createWorkFlowSchema = Joi.object({
@@ -36,6 +37,15 @@ const createWorkFlow = async (req: Request, res: Response) => {
         message: detail?.message,
       }));
       res.status(400).json(errors);
+      return;
+    }
+    const getWorkflowsCount = await workFlowModel
+      .find({ authorId: userId })
+      .countDocuments();
+    if (getWorkflowsCount > 3) {
+      res
+        .status(400)
+        .json({ error: "Maximum of 3 Workflows can be created in MVP Phase" });
       return;
     }
     const createWorkFlowData = await workFlowServices.createWorkFlow(
