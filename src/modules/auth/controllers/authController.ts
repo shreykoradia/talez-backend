@@ -29,13 +29,6 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
     }
     const validatedUserData = validatedResult.value;
 
-    const existingUsername = await userModel.findOne({
-      username: userData?.username,
-    });
-    if (existingUsername) {
-      res.status(400).json({ message: "Username is already in use" });
-      return;
-    }
     const existingUser = await userModel.findOne({ email: userData?.email });
     if (existingUser) {
       res.status(400).json({ message: "Email is already in use" });

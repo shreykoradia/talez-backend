@@ -39,7 +39,7 @@ const login = async (userData: any) => {
     }
     if (!jwt_secret_key) return;
     const token = jwt.sign({ userId: user._id }, jwt_secret_key, {
-      expiresIn: "2h",
+      expiresIn: "24h",
     });
     return token;
   } catch (error) {

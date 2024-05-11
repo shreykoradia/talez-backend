@@ -26,19 +26,12 @@ const updateProfileServices = async (
     if (!ObjectId.isValid(userId)) {
       throw new Error("Invalid userId");
     }
-    const existingUserWithUsername = await userModel.findOne({
-      username: validatedUserData.username,
-      _id: { $ne: new ObjectId(userId) },
-    });
 
     const existingUserWithUserEmail = await userModel.findOne({
       username: validatedUserData.email,
       _id: { $ne: new ObjectId(userId) },
     });
 
-    if (existingUserWithUsername) {
-      throw new Error("Username Already Exists");
-    }
     if (existingUserWithUserEmail) {
       throw new Error("Email Already Exists");
     }
