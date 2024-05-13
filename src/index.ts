@@ -13,7 +13,7 @@ import shareRoutes from "./modules/share/routes/shareRoutes";
 dotenv.config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 connectToMongoDB();
