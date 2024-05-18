@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import authServices from "../services/authServices";
 import Joi from "joi";
 import jwt from "jsonwebtoken";
-// import { sendEmailVerification } from "../../../shared/mail-service/email";
 import userModel from "../models/users";
+import { sendEmailVerification } from "../../../shared/mail-service/email";
 
 const signUp = async (req: Request, res: Response): Promise<void> => {
   const signUpValidationSchema = Joi.object({
@@ -51,7 +51,8 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
         jwt_secret_key,
         { expiresIn: "10m" }
       );
-      // sendEmailVerification(validatedUserData.email, token);
+      sendEmailVerification(validatedUserData.email, token);
+      
     }
   } catch (error) {
     console.error(error);

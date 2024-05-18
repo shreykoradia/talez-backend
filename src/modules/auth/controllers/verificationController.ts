@@ -29,7 +29,6 @@ const verifyEmail = async (req: Request, res: Response): Promise<void> => {
     }
 
     await markEmailAsVerified(userId);
-
     res.status(200).json({ message: "Email verification successful" });
   } catch (error) {
     console.error(error);

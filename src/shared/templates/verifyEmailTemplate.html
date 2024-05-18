@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #007BFF;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        a {
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .verification-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2563EB;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .footer-text {
+            color: #333;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Email Verification for Talez</h2>
+        <p>Dear valued user,</p>
+        <p>Thank you for choosing Talez! To activate your account and join our product brainstorming application -
+            Talez, please click the following link. Remember, the link is only valid for the next 10 minutes:</p>
+        <p>
+            <a class="verification-link" href="{{verificationLink}}">Verify Your Email Address</a>
+        </p>
+        <p>If you didn't sign up for our service, you can safely ignore this email.</p>
+        <p class="footer-text">Best regards,<br>Team Talez</p>
+    </div>
+</body>
+
+</html>
