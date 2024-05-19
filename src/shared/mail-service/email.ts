@@ -6,11 +6,10 @@ import Queue from "bull";
 
 dotenv.config();
 
-
 const redisConfig = {
   redis: {
     host: process.env.REDIS_HOST || "localhost",
-    port:  Number(process.env.REDIS_PORT) || 6379,
+    port: Number(process.env.REDIS_PORT) || 6379,
   },
 };
 
@@ -38,14 +37,13 @@ const getEmailTemplate = () => {
 export const sendEmailVerification = (to: string, token: string) => {
   const emailTemplate = getEmailTemplate();
 
-
   const mailOptions = {
     from: process.env.EMAIL_HOST_FROM,
     to,
     subject: "Verify your Email Account",
     html: emailTemplate.replace(
       "{{verificationLink}}",
-      `${process.env.BACKEND_PROD_URL}/verify/${token}`
+      `${process.env.BACKEND_PROD_URL}/auth/verify/${token}`
     ),
   };
 
@@ -53,9 +51,8 @@ export const sendEmailVerification = (to: string, token: string) => {
   emailQueue.add("sendEmail", { mailOptions });
 };
 
-
- emailQueue.process("sendEmail", 1, async (job) => {
-    const { mailOptions } = job.data;
-    // send email using nodemailer
-    await transporter.sendMail(mailOptions);
-  });
+emailQueue.process("sendEmail", 1, async (job) => {
+  const { mailOptions } = job.data;
+  // send email using nodemailer
+  await transporter.sendMail(mailOptions);
+});
