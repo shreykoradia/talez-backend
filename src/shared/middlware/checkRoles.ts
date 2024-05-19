@@ -4,7 +4,7 @@
  * have a check before hitting any endpoint related to tales
  * or feedback or share users.
  *
- * Roles Access
+ * Roles Access:
  * can_view will have only view access , also they cannot invite anyone also they can add feedbacks and upvote and downvote feedbacks
  * can_edit will have edit access, to add tales feed-back and upvote or downvote also upgrade or degrade access of same level or level with anyone below them
  * full_access will have full access to conclude the tale and and also upgrade or demote access of any level
