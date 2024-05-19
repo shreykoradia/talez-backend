@@ -10,7 +10,7 @@ const redisConfig = {
   redis: {
     host: process.env.REDIS_HOST,
     port: Number(process.env.REDIS_PORT),
-    password: process.env.REDIS_PASSWORD
+    password: process.env.REDIS_PASSWORD,
   },
 };
 
@@ -44,7 +44,7 @@ export const sendEmailVerification = (to: string, token: string) => {
     subject: "Verify your Email Account",
     html: emailTemplate.replace(
       "{{verificationLink}}",
-      `${process.env.BACKEND_PROD_URL}/auth/verify/${token}`
+      `${process.env.BACKEND_PROD_URL}auth/verify/${token}`
     ),
   };
 
