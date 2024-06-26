@@ -2,6 +2,8 @@ import { ObjectId } from "mongodb";
 import userModel from "../../auth/models/users";
 import { feedback } from "../types";
 import feedbackModel from "../models/feedback";
+import { HttpException } from "../../../shared/exception/exception";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
 const addFeedBack = async (
   userId: string,
@@ -13,11 +15,14 @@ const addFeedBack = async (
       return;
     }
     if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id required"
+      );
     }
     const user = await userModel.findById(userId);
     if (!user) {
-      throw new Error("User not found");
+      throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "User not found");
     }
 
     // extracting authorName & authorId
@@ -46,7 +51,10 @@ const getFeedBacks = async (
 ) => {
   try {
     if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id required"
+      );
     }
 
     const feedbackTotalCount = await feedbackModel.countDocuments({
@@ -67,20 +75,23 @@ const getFeedBacks = async (
     return feedbackResponse;
   } catch (error) {
     console.error(error);
-    throw new Error("Something Went Wrong, huh!");
+    throw error;
   }
 };
 
 const getFeedbackById = async (feedbackId: string, userId: string) => {
   try {
     if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id required"
+      );
     }
     const response = await feedbackModel.findOne({ _id: feedbackId });
     return response;
   } catch (error) {
     console.log(error);
-    throw new Error("Something Went Wrong, huh!");
+    throw error;
   }
 };
 
