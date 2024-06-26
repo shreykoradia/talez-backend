@@ -1,11 +1,16 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import authServices from "../services/authServices";
 import Joi from "joi";
 import jwt from "jsonwebtoken";
 import userModel from "../models/users";
 import { sendEmailVerification } from "../../../shared/mail-service/email";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
-const signUp = async (req: Request, res: Response): Promise<void> => {
+const signUp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const signUpValidationSchema = Joi.object({
     username: Joi.string().trim().min(3).max(15).required().label("Username"),
     email: Joi.string().trim().email().required().label("Email"),
@@ -24,25 +29,25 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
         field: detail?.context?.key,
         message: detail?.message,
       }));
-      res.status(400).json(errors);
+      res
+        .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+        .json(errors.map((err) => err?.message));
       return;
     }
     const validatedUserData = validatedResult.value;
 
-    const existingUser = await userModel.findOne({ email: userData?.email });
-    if (existingUser) {
-      res.status(400).json({ message: "Email is already in use" });
-      return;
-    }
-
     const newUser = await authServices.signUp(validatedUserData);
 
-    res.status(201).json({ msg: "Account created successfully" });
+    res
+      .status(HTTP_RESPONSE_CODE.CREATED)
+      .json({ msg: "Account created successfully" });
 
     const user = await userModel.findOne({ email: newUser?.email });
 
     if (!user?._id) {
-      res.status(404).json({ error: "User Not Found" });
+      res
+        .status(HTTP_RESPONSE_CODE.NOT_FOUND)
+        .json({ message: "User Not Found" });
     }
 
     if (jwt_secret_key) {
@@ -52,15 +57,17 @@ const signUp = async (req: Request, res: Response): Promise<void> => {
         { expiresIn: "10m" }
       );
       sendEmailVerification(validatedUserData.email, token);
-      
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(error);
   }
 };
 
-const login = async (req: Request, res: Response): Promise<void> => {
+const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   const loginValidatonSchema = Joi.object({
     username: Joi.string().trim().min(3).max(15).optional().label("Username"),
     email: Joi.string().trim().email().optional().label("Email"),
@@ -77,26 +84,28 @@ const login = async (req: Request, res: Response): Promise<void> => {
         field: detail?.context?.key,
         message: detail?.message,
       }));
-      res.status(400).json(errors);
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json(errors);
       return;
     }
     const validatedUserData = validatedResult.value;
     const access_token = await authServices.login(validatedUserData);
-    res.status(200).json({ access_token });
+    res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ access_token });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    next(error);
   }
 };
 
-const getUserDetail = async (req: Request, res: Response) => {
+const getUserDetail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userId = req?.user?.userId;
     const response = await authServices.getUserById(userId);
-    res.status(200).json({ user: response });
+    res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ user: response });
   } catch (error) {
-    console.log(error);
-    res.status(500).json(`Something Went Wrong!`);
+    next(error);
   }
 };
 
