@@ -14,6 +14,7 @@ export const HTTP_RESPONSE_CODE = {
   BAD_REQUEST: 400,
   SUCCESS: 200,
   UNAUTHORIZED: 401,
+  UNPROCESSABLE_ENTITY: 422,
   SERVER_ERROR: 500,
 };
 
@@ -25,6 +26,7 @@ export const enum HttpStatusCode {
   SUCCESS = 200,
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
+  UNPROCESSABLE_ENTITY = 422,
 }
 
 export const APP_ERROR_MESSAGE = {
