@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import userModel from "../models/users";
 import { User } from "../types";
-import dotenv from "dotenv";
 import { HttpException } from "../../../shared/exception/exception";
 import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
