@@ -9,6 +9,7 @@ import talesRoutes from "./modules/tales/routes/talesRoutes";
 import feedbackRoutes from "./modules/feedback/routes/feedbackRoutes";
 import reactionRoutes from "./modules/reactions/routes/reactionRoutes";
 import shareRoutes from "./modules/share/routes/shareRoutes";
+import errorHandler from "./shared/middlware/errorHandler";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ connectToMongoDB();
 
 app.use(express.json());
 
+// Routes
 app.use("/v1/auth", authRoutes);
 app.use("/v1/profile", profileRoutes);
 app.use("/v1/workflow", workFlowRoutes);
@@ -27,6 +29,9 @@ app.use("/v1/tales", talesRoutes);
 app.use("/v1/feedback", feedbackRoutes);
 app.use("/v1/reaction", reactionRoutes);
 app.use("/v1/share", shareRoutes);
+
+// ERROR HANDLER MIDDLEWARE - should be used LAST only always
+app.use(errorHandler);
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);

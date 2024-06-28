@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 import workFlowServices from "../services/workFlowServices";
 import {
@@ -8,8 +8,14 @@ import {
   ResponseBody,
 } from "../../../types/express";
 import workFlowModel from "../models/workFlow";
+import { HttpException } from "../../../shared/exception/exception";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
-const createWorkFlow = async (req: Request, res: Response) => {
+const createWorkFlow = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const createWorkFlowSchema = Joi.object({
     workFlowTitle: Joi.string().trim().min(1).max(50).required().label("title"),
     description: Joi.string()
@@ -23,10 +29,16 @@ const createWorkFlow = async (req: Request, res: Response) => {
     const userId = req.user?.userId;
     const userData = req.body;
     if (!userId) {
-      throw new Error("User not found!");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id required!"
+      );
     }
     if (!userData) {
-      throw new Error("Data not found ");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Data not found "
+      );
     }
     const validatedResult = createWorkFlowSchema.validate(userData, {
       abortEarly: false,
@@ -36,7 +48,7 @@ const createWorkFlow = async (req: Request, res: Response) => {
         field: detail?.context?.key,
         message: detail?.message,
       }));
-      res.status(400).json(errors);
+      res.status(HTTP_RESPONSE_CODE.UNPROCESSABLE_ENTITY).json(errors);
       return;
     }
     const getWorkflowsCount = await workFlowModel
@@ -44,7 +56,7 @@ const createWorkFlow = async (req: Request, res: Response) => {
       .countDocuments();
     if (getWorkflowsCount > 3) {
       res
-        .status(400)
+        .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
         .json({ error: "Maximum of 3 Workflows can be created in MVP Phase" });
       return;
     }
@@ -52,21 +64,25 @@ const createWorkFlow = async (req: Request, res: Response) => {
       userId,
       validatedResult?.value
     );
-    res.status(201).json({ data: createWorkFlowData });
+    res.status(HTTP_RESPONSE_CODE.CREATED).json({ data: createWorkFlowData });
   } catch (error) {
     console.error("Something Went Wrong!", error);
-    res.status(500).json("Something Went Wrong Huh!");
+    next(error);
   }
 };
 
 const getAllWorkFlows = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const userId = req.user?.userId;
     if (!userId) {
-      throw Error("UserId does not exists");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "UserId required"
+      );
     }
     // Access limit and offset from paginate object using optional chaining
     const limit = req.paginate?.limit;
@@ -77,16 +93,17 @@ const getAllWorkFlows = async (
       limit,
       offset
     );
-    res.status(200).json(response);
+    res.status(HTTP_RESPONSE_CODE.SUCCESS).json(response);
   } catch (error) {
     console.error("Something Went Wrong Huh!", error);
-    res.status(500).json("Something Went Wrong Huh!");
+    next(error);
   }
 };
 
 const getWorkflowById = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const userId = req.user?.userId;
@@ -95,17 +112,17 @@ const getWorkflowById = async (
       throw Error("UserId does not exist");
     }
     if (!workflowId) {
-      res.status(400).json("Workflow Id  required");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("Workflow Id  required");
     } else {
       const workflow = await workFlowServices.getWorkflowById(
         userId,
         workflowId
       );
-      res.status(200).json({ workflow });
+      res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ workflow });
     }
   } catch (error) {
     console.error("Something Went Wrong Huh!", error);
-    res.status(400).json("Something Went Wrong Huh!");
+    next(error);
   }
 };
 

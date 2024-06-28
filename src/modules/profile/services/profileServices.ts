@@ -1,18 +1,12 @@
 import { ObjectId } from "mongodb";
 import userModel from "../../auth/models/users";
+import { HttpException } from "../../../shared/exception/exception";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
 interface profileUpdateHeader {
   email?: string;
   username?: string;
   status?: string;
-}
-
-interface userProfileCard {
-  desired_anime_charecter: string;
-  favourite_artist: string;
-  favourite_manga: string;
-  favourite_story: string;
-  favourite_genre: string;
 }
 
 const updateProfileServices = async (
@@ -24,7 +18,7 @@ const updateProfileServices = async (
       return;
     }
     if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
+      throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST, "Invalid userId");
     }
 
     const existingUserWithUserEmail = await userModel.findOne({
@@ -33,7 +27,10 @@ const updateProfileServices = async (
     });
 
     if (existingUserWithUserEmail) {
-      throw new Error("Email Already Exists");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.CONFLICT,
+        "Email already taken"
+      );
     }
     const updatedProfile = await userModel.findOneAndUpdate(
       { _id: new ObjectId(userId) },
@@ -48,30 +45,4 @@ const updateProfileServices = async (
   }
 };
 
-const updateProfileCard = async (
-  userId: string,
-  validatedUserData: userProfileCard
-) => {
-  try {
-    if (!validatedUserData) return;
-
-    if (!validatedUserData) {
-      return;
-    }
-    if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
-    }
-    const updatedProfileCard = await userModel.findOneAndUpdate(
-      { _id: new ObjectId(userId) },
-      { $set: validatedUserData },
-      { new: true }
-    );
-
-    return updatedProfileCard;
-  } catch (error) {
-    console.error("Error Updating Error:", error);
-    throw error;
-  }
-};
-
-export default { updateProfileServices, updateProfileCard };
+export default { updateProfileServices };

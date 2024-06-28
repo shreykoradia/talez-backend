@@ -1,3 +1,5 @@
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
+import { HttpException } from "../../../shared/exception/exception";
 import userModel from "../../auth/models/users";
 import shareModel from "../models/share";
 
@@ -11,8 +13,15 @@ const inviteUser = async (
   userId: string,
   userData: userDataProps
 ) => {
-  if (!userId) return;
-  if (!workflowId) return;
+  if (!userId) {
+    throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST, "User Id required");
+  }
+  if (!workflowId) {
+    throw new HttpException(
+      HTTP_RESPONSE_CODE.BAD_REQUEST,
+      "Workflow Id required"
+    );
+  }
 
   const sharedBy = await userModel.findById(userId);
 
@@ -28,7 +37,10 @@ const inviteUser = async (
     });
 
     if (invitedUser) {
-      throw new Error("User Already Invited");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.CONFLICT,
+        "User Already Invited"
+      );
     }
 
     const invite = new shareModel({
@@ -42,17 +54,26 @@ const inviteUser = async (
     return invite;
   } else {
     // Todo : Send the Email to the user sending him a invite link to the app and the workflow
-    throw new Error("User Doesn't seems to be on Talez, Invite him on talez");
+    throw new HttpException(
+      HTTP_RESPONSE_CODE.BAD_REQUEST,
+      "User Doesn't seems to be on Talez, Invite him on talez"
+    );
   }
 };
 
 const getUsersWithAccess = async (userId: string, workflowId: string) => {
   try {
     if (!userId) {
-      throw Error("UserId not found");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "UserId required"
+      );
     }
     if (!workflowId) {
-      throw Error("Workflow Id not found");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Workflow Id required"
+      );
     }
     const response = await shareModel.find({ workflow: workflowId });
     const enrichedResponse = await Promise.all(
@@ -72,11 +93,10 @@ const getUsersWithAccess = async (userId: string, workflowId: string) => {
         return share;
       })
     );
-
     return enrichedResponse;
   } catch (error) {
     console.log(error);
-    throw Error("Something went wrong, Huh!");
+    throw error;
   }
 };
 
@@ -87,10 +107,16 @@ const updateAccess = async (
 ) => {
   try {
     if (!userId) {
-      throw Error("UserId not found");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "UserId required"
+      );
     }
     if (!workflowId) {
-      throw Error("UserId not found");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Workflow Id required"
+      );
     }
     const userDetails = await userModel.findOne({ email: userData?.email });
     await shareModel.updateOne(
@@ -102,7 +128,7 @@ const updateAccess = async (
     );
   } catch (error) {
     console.log(error);
-    throw Error("Something Went Wrong Huh!");
+    throw error;
   }
 };
 
@@ -112,7 +138,10 @@ const removeAccess = async (
 ) => {
   try {
     if (!workflowId) {
-      throw Error("WorkflowId is Required");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Workflow Id required"
+      );
     }
     const userDetails = await userModel.findOne({ email: userData?.email });
     const removedSharedUser = await shareModel.findOneAndDelete({
@@ -123,7 +152,7 @@ const removeAccess = async (
     return removedSharedUser;
   } catch (error) {
     console.log(error);
-    throw Error("Something Went Wrong!");
+    throw error;
   }
 };
 

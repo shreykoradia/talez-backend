@@ -2,6 +2,8 @@ import { ObjectId } from "mongodb";
 import userModel from "../../auth/models/users";
 import workFlowModel from "../models/workFlow";
 import shareModel from "../../share/models/share";
+import { HttpException } from "../../../shared/exception/exception";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
 interface userData {
   workFlowTitle: string;
@@ -14,11 +16,11 @@ const createWorkFlow = async (userId: string, validatedData: userData) => {
       return;
     }
     if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
+      throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST, "Invalid userId");
     }
     const user = await userModel.findById(userId);
     if (!user) {
-      throw new Error("User not found");
+      throw new HttpException(HTTP_RESPONSE_CODE.CONFLICT, "User not found");
     }
 
     // extracting author for workflow idea
@@ -98,11 +100,17 @@ const getAllWorkFlows = async (
 const getWorkflowById = async (userId: string, workflowId: string) => {
   try {
     if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id required"
+      );
     }
 
     if (!ObjectId.isValid(workflowId)) {
-      throw new Error("Invalid workflowId");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Workflow Id required"
+      );
     }
 
     const workflow = await workFlowModel.findOne({
@@ -110,7 +118,10 @@ const getWorkflowById = async (userId: string, workflowId: string) => {
     });
 
     if (!workflow) {
-      throw new Error("Workflow not found");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.NOT_FOUND,
+        "Workflow not found"
+      );
     }
 
     return workflow;

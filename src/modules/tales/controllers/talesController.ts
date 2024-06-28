@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 import talesServices from "../services/talesServices";
 import {
@@ -7,10 +7,13 @@ import {
   RequestQuery,
   ResponseBody,
 } from "../../../types/express";
+import { HttpException } from "../../../shared/exception/exception";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
 const createTales = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const taleValidationSchema = Joi.object({
     title: Joi.string().trim().min(1).max(50).required().label("title"),
@@ -27,15 +30,24 @@ const createTales = async (
     const workflowId = req.query?.workflowId || "";
 
     if (!userId) {
-      throw new Error("UserId not found!");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id required!"
+      );
     }
 
     if (!workflowId) {
-      throw new Error("workflowId not found!");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Workflow Id required!"
+      );
     }
 
     if (!talesData) {
-      throw new Error("Data not found ");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Tales Data required!"
+      );
     }
 
     const validatedResult = taleValidationSchema.validate(talesData, {
@@ -47,10 +59,7 @@ const createTales = async (
         field: detail?.context?.key,
         message: detail?.message,
       }));
-      res.status(400).json(errors);
-      return;
-    }
-    if (!userId) {
+      res.status(HTTP_RESPONSE_CODE.UNPROCESSABLE_ENTITY).json(errors);
       return;
     }
 
@@ -59,16 +68,19 @@ const createTales = async (
       workflowId,
       validatedResult?.value
     );
-    res.status(201).json({ newTale, msg: "Tale successfully created" });
+    res
+      .status(HTTP_RESPONSE_CODE.CREATED)
+      .json({ newTale, msg: "Tale successfully created" });
   } catch (error) {
     console.error("Something Went Wrong!", error);
-    res.status(500).json({ error: error });
+    next(error);
   }
 };
 
 const getTales = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const userId = req?.user?.userId;
@@ -77,7 +89,7 @@ const getTales = async (
     const offset = req?.paginate?.offset as number;
 
     if (!workflowId) {
-      res.status(400).json("Workflow Id Required");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("Workflow Id Required");
     } else {
       const response = await talesServices.getTales(
         userId,
@@ -85,31 +97,32 @@ const getTales = async (
         limit,
         offset
       );
-      res.status(200).json({ tales: response });
+      res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ tales: response });
     }
   } catch (error) {
     console.error(error);
-    res.status(400).json(error);
+    next(error);
   }
 };
 
 const getTaleById = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const taleId = req?.query?.taleId;
     const userId = req?.user?.userId;
 
     if (!taleId) {
-      res.status(400).json("Tale Id Required");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("Tale Id Required");
     } else {
       const tale = await talesServices.getTaleById(userId, taleId);
-      res.status(200).json({ tale });
+      res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ tale });
     }
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: "Failed to fetch tale" });
+    next(error);
   }
 };
 
