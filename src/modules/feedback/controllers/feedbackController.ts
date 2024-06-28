@@ -1,6 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Joi from "joi";
 import feedbackServices from "../services/feedbackServices";
+import { HttpException } from "../../../shared/exception/exception";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
 interface RequestParams {}
 
@@ -15,7 +17,8 @@ interface RequestQuery {
 
 const addFeedBack = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   const feedbackValidationSchema = Joi.object({
     feedback: Joi.string().trim().min(1).max(500).required().label("title"),
@@ -27,11 +30,14 @@ const addFeedBack = async (
     const userId = req?.user?.userId;
 
     if (!userId) {
-      throw new Error("User not found!");
+      throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "User not found!");
     }
 
     if (!talesData) {
-      throw new Error("Data not found ");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Tales Data not found "
+      );
     }
 
     const validatedResult = feedbackValidationSchema.validate(talesData, {
@@ -43,7 +49,7 @@ const addFeedBack = async (
         field: detail?.context?.key,
         message: detail?.message,
       }));
-      res.status(400).json(errors);
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json(errors);
       return;
     }
     if (!userId) {
@@ -58,21 +64,25 @@ const addFeedBack = async (
       validatedResult?.value
     );
     if (!newFeedback) {
-      return;
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.SERVER_ERROR,
+        "New feedback was not created"
+      );
     } else {
       res
-        .status(201)
+        .status(HTTP_RESPONSE_CODE.CREATED)
         .json({ newFeedback: newFeedback, msg: "Feedback successfully Added" });
     }
   } catch (error) {
     console.error("Something Went Wrong!", error);
-    res.status(500).json({ error: error });
+    next(error);
   }
 };
 
 const getFeedbacks = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const taleId = req.query?.taleId;
@@ -81,45 +91,53 @@ const getFeedbacks = async (
     const offset = req.paginate?.offset as number;
 
     if (!userId) {
-      throw new Error("User not found!");
+      throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "User not found!");
     }
 
     if (!taleId) {
-      throw new Error("Tale Id not found ");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Tales Id not found "
+      );
     }
+
     const response = await feedbackServices.getFeedBacks(
       userId,
       taleId,
       limit,
       offset
     );
-    res.status(200).json({ feedbacks: response });
+    res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ feedbacks: response });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error });
+    next(error);
   }
 };
 
 const getFeedbackById = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const feedbackId = req.query.feedbackId;
     const userId = req.user?.userId;
     if (!userId) {
-      throw new Error("User not found!");
+      throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "User not found!");
     }
 
     if (!feedbackId) {
-      throw new Error("Tale Id not found ");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "FeedbackId Id not found "
+      );
     }
 
     const response = await feedbackServices.getFeedbackById(feedbackId, userId);
-    res.status(200).json({ feedback: response });
+    res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ feedback: response });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: error });
+    next(error);
   }
 };
 

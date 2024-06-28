@@ -1,6 +1,8 @@
 import { ObjectId } from "mongodb";
 import userModel from "../../auth/models/users";
 import reactionModel from "../models/reactions";
+import { HttpException } from "../../../shared/exception/exception";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
 // add upvote Reaction Services
 const upVote = async (
@@ -10,14 +12,22 @@ const upVote = async (
   userData: string
 ) => {
   try {
-    if (userData !== "upvote") return;
+    if (userData !== "upvote") {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Upvote Required"
+      );
+    }
 
     if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id Invalid"
+      );
     }
     const user = await userModel.findById(userId);
     if (!user) {
-      throw new Error("User not found");
+      throw new HttpException(HTTP_RESPONSE_CODE.CONFLICT, "User not found");
     }
 
     // extracting authorName & authorId
@@ -51,7 +61,7 @@ const upVote = async (
     return newUpVote;
   } catch (error) {
     console.error(error);
-    throw new Error("Something Went Wrong!");
+    throw error;
   }
 };
 
@@ -64,14 +74,22 @@ const downVote = async (
   userData: string
 ) => {
   try {
-    if (userData !== "downvote") return;
+    if (userData !== "downvote") {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Downvote Rquired"
+      );
+    }
 
     if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id invalid"
+      );
     }
     const user = await userModel.findById(userId);
     if (!user) {
-      throw new Error("User not found");
+      throw new HttpException(HTTP_RESPONSE_CODE.CONFLICT, "User not found");
     }
 
     // extracting authorName & authorId
@@ -105,13 +123,16 @@ const downVote = async (
     return newDownVote;
   } catch (error) {
     console.error(error);
-    throw new Error("Something Went Wrong!");
+    throw error;
   }
 };
 const countReaction = async (userId: string, feedbackId: string) => {
   try {
     if (!ObjectId.isValid(userId)) {
-      throw Error("Invalid UserId");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id Required"
+      );
     }
     const upvote_response = await reactionModel.find({
       feedback_id: feedbackId,
@@ -128,14 +149,17 @@ const countReaction = async (userId: string, feedbackId: string) => {
     }
   } catch (error) {
     console.error(error);
-    throw Error("Something Went Wrong, huh!");
+    throw error;
   }
 };
 
 const voteByFeedbackId = async (feedbackId: string, userId: string) => {
   try {
     if (!ObjectId.isValid(userId)) {
-      throw Error("Invalid UserId");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "UserId Required"
+      );
     }
 
     const response = await reactionModel.findOne({
@@ -146,7 +170,7 @@ const voteByFeedbackId = async (feedbackId: string, userId: string) => {
     return response;
   } catch (error) {
     console.error(error);
-    throw Error("Something Went Wrong, huh!");
+    throw error;
   }
 };
 

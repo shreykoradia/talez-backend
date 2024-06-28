@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import reactionServices from "../services/reactionServices";
 import {
   RequestBody,
@@ -7,11 +7,13 @@ import {
   ResponseBody,
 } from "../../../types/express";
 import reactionModel from "../models/reactions";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
 // add upvote
 const upvote = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const userData = req.body;
@@ -19,15 +21,15 @@ const upvote = async (
     const taleId = req?.query?.taleId;
 
     if (!userId) {
-      res.status(400).json("UserId required");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("User Id required");
     }
     if (!taleId) {
-      res.status(400).json("taleId required");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("Tale Id required");
       return;
     }
 
     if (userData?.vote_type !== "upvote") {
-      res.status(400).json("Upvote Requried");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("Upvote Required");
     }
 
     const existingUpVote = await reactionModel.findOne({
@@ -39,7 +41,7 @@ const upvote = async (
 
     if (existingUpVote) {
       res
-        .status(400)
+        .status(HTTP_RESPONSE_CODE.CONFLICT)
         .json({ res: existingUpVote, msg: "Upvote by User Already Exists" });
     } else {
       const response = await reactionServices.upVote(
@@ -48,17 +50,20 @@ const upvote = async (
         userData?.feedbackId,
         userData?.vote_type
       );
-      res.status(201).json({ response, msg: "upvoted successfully" });
+      res
+        .status(HTTP_RESPONSE_CODE.CREATED)
+        .json({ response, msg: "upvoted successfully" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json("Something Went Wrong!");
+    next(error);
   }
 };
 
 const downvote = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const userData = req.body;
@@ -66,15 +71,15 @@ const downvote = async (
     const talez_id = req?.query?.taleId;
 
     if (!userId) {
-      res.status(500).json("UserId Required");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("User Id Required");
       return;
     }
     if (!talez_id) {
-      res.status(400).json("Tale Id Required");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("Tale Id Required");
       return;
     }
     if (userData?.vote_type !== "downvote") {
-      return;
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("DownVote Required");
     }
 
     const existingDownVote = await reactionModel.findOne({
@@ -86,7 +91,7 @@ const downvote = async (
 
     if (existingDownVote) {
       res
-        .status(400)
+        .status(HTTP_RESPONSE_CODE.CONFLICT)
         .json({ res: existingDownVote, msg: "Downvote Already Exists" });
     } else {
       const response = await reactionServices.downVote(
@@ -95,58 +100,66 @@ const downvote = async (
         userData?.feedbackId,
         userData?.vote_type
       );
-      res.status(201).json({ response, msg: "downvoted successfully" });
+      res
+        .status(HTTP_RESPONSE_CODE.CREATED)
+        .json({ response, msg: "Downvoted successfully" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json("Something Went Wrong!");
+    next(error);
   }
 };
 
 const countReaction = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const userId = req?.user?.userId;
     const feedbackId = req.query.feedbackId;
     if (!userId) {
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("User Id Required");
+
       return;
     }
     if (!feedbackId) {
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("Feedback Id Required");
+
       return;
     }
     const response = await reactionServices.countReaction(userId, feedbackId);
-    res.status(200).json({ response });
+    res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ response });
   } catch (error) {
     console.error(error);
-    res.status(500).json("Something Went Wrong Huh!");
+    next(error);
   }
 };
 
 const voteByFeedbackId = async (
   req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
-  res: Response
+  res: Response,
+  next: NextFunction
 ) => {
   try {
     const userId = req?.user?.userId;
     const feedbackId = req.query.feedbackId;
     if (!userId) {
-      res.status(400).json("UserId is required");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("UserId is required");
       return;
     }
     if (!feedbackId) {
-      res.status(400).json("Feedback Id required");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("Feedback Id required");
       return;
     }
     const response = await reactionServices.voteByFeedbackId(
       feedbackId,
       userId
     );
-    res.status(200).json({ vote_type: response });
+    res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ vote_type: response });
   } catch (error) {
     console.log(error);
-    res.status(500).json("Something Went Wrong huh!");
+    next(error);
   }
 };
 

@@ -2,6 +2,8 @@ import { ObjectId } from "mongodb";
 import { tale } from "../types";
 import userModel from "../../auth/models/users";
 import talesModel from "../models/tales";
+import { HttpException } from "../../../shared/exception/exception";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 
 // create tale service
 
@@ -15,15 +17,18 @@ const createTales = async (
       return;
     }
     if (!ObjectId.isValid(userId)) {
-      throw new Error("Invalid userId");
+      throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST, "Invalid userId");
     }
     const user = await userModel.findById(userId);
     if (!user) {
-      throw new Error("User not found");
+      throw new HttpException(HTTP_RESPONSE_CODE.CONFLICT, "User not found");
     }
 
     if (!ObjectId.isValid(workflowId)) {
-      throw new Error("Invalid workflowId");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Invalid workflowId"
+      );
     }
 
     //extracting author for tales
@@ -56,7 +61,7 @@ const getTales = async (
   offset: number
 ) => {
   if (!ObjectId.isValid(userId)) {
-    throw Error("Invalid userId");
+    throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST, "Invalid userId");
   }
 
   try {
@@ -78,18 +83,18 @@ const getTales = async (
     return talesResponse;
   } catch (error) {
     console.error(error);
-    throw Error("Something went wrong huh!");
+    throw error;
   }
 };
 
 // getTalesById
 const getTaleById = async (userId: string, taleId: string) => {
   if (!ObjectId.isValid(userId)) {
-    throw new Error("Invalid userId");
+    throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST, "Invalid userId");
   }
 
   if (!ObjectId.isValid(taleId)) {
-    throw new Error("Invalid taleId");
+    throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST, "Invalid taleId");
   }
 
   try {
@@ -98,13 +103,13 @@ const getTaleById = async (userId: string, taleId: string) => {
     });
 
     if (!tale) {
-      throw new Error("Tale not found");
+      throw new HttpException(HTTP_RESPONSE_CODE.CONFLICT, "Tale not found");
     }
 
     return tale;
   } catch (error) {
     console.error(error);
-    throw new Error("Failed to fetch tale");
+    throw error;
   }
 };
 

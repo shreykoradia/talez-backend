@@ -25,3 +25,7 @@ export interface RequestQuery {
   limit?: number;
   offset?: number;
 }
+
+export interface CustomError extends Error {
+  status?: number;
+}
