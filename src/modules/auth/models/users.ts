@@ -8,20 +8,38 @@ const userSchema = new Schema<User>({
   },
   email: {
     type: String,
-    required: true,
+    required: false,
     unique: true,
+    default: null,
+  },
+  githubId: {
+    type: String,
+    required: false,
+    default: null,
   },
   password: {
     type: String,
-    required: true,
+    required: false,
+    default: null,
   },
   isVerified: {
     type: Boolean,
     required: true,
+    default: false,
   },
   status: {
     type: String,
     required: false,
+  },
+  avatarUrl: {
+    type: String,
+    required: false,
+    default: null,
+  },
+  authType: {
+    type: String,
+    enum: ["custom", "github"],
+    default: "custom",
   },
 });
 
