@@ -26,7 +26,7 @@ const githubCallback = async (
     }
 
     const jwtToken = jwt.sign(
-      { userId: user.id },
+      { userId: user._id },
       process.env.JWT_SECRET_KEY!,
       { expiresIn: "24h" }
     );
