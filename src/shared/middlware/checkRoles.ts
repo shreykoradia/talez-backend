@@ -22,6 +22,7 @@ import shareModel from "../../modules/share/models/share";
 import talesModel from "../../modules/tales/models/tales";
 import workFlowModel from "../../modules/workflow/models/workFlow";
 import feedbackModel from "../../modules/feedback/models/feedback";
+import { HTTP_RESPONSE_CODE } from "../constants";
 
 export const checkRole =
   (requiredRole: Array<string>) =>
@@ -49,7 +50,7 @@ export const checkRole =
 
       //finding shared document
       const getSharedDocument = await shareModel.findOne({
-        shared_to: user?.userId,
+        sharedTo: user?.userId,
         workflow: workflowId || getWorkFlowId,
       });
 
@@ -67,9 +68,15 @@ export const checkRole =
       if (hasRequriedRole || isUserOwner) {
         next();
       } else {
-        res.status(403).json("User UnAuthorised or have No Access");
+        res.status(HTTP_RESPONSE_CODE.UNAUTHORIZED).json({
+          message: "User unauthorised or have No Access",
+          status: HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        });
       }
     } catch (error) {
-      res.status(500).json("Something Went Wrong, huh!");
+      res.status(HTTP_RESPONSE_CODE.SERVER_ERROR).json({
+        message: "Something Went Wrong, huh!",
+        status: HTTP_RESPONSE_CODE.SERVER_ERROR,
+      });
     }
   };
