@@ -16,7 +16,7 @@ const createTales = async (
   next: NextFunction
 ) => {
   const taleValidationSchema = Joi.object({
-    title: Joi.string().trim().min(1).max(50).required().label("title"),
+    title: Joi.string().trim().min(1).max(150).required().label("title"),
     description: Joi.string()
       .trim()
       .min(1)
