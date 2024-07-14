@@ -6,19 +6,19 @@ const feedbackSchema = new Schema<feedback>({
     type: String,
     required: true,
   },
-  feedback_author_id: {
+  feedbackAuthorId: {
     type: String,
     required: true,
   },
-  feedback_author_name: {
+  feedbackAuthorName: {
     type: String,
     required: true,
   },
-  created_at: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },
-  tale_id: {
+  taleId: {
     type: String,
     required: true,
   },

@@ -31,9 +31,9 @@ const addFeedBack = async (
 
     const newFeedback = new feedbackModel({
       feedback: validatedData.feedback,
-      feedback_author_id: authorId,
-      feedback_author_name: authorName,
-      tale_id: taleId,
+      feedbackAuthorId: authorId,
+      feedbackAuthorName: authorName,
+      taleId: taleId,
     });
     await newFeedback.save();
     return newFeedback;
@@ -58,13 +58,13 @@ const getFeedBacks = async (
     }
 
     const feedbackTotalCount = await feedbackModel.countDocuments({
-      tale_id: taleId,
+      taleId: taleId,
     });
 
     const totalPages = Math.ceil(feedbackTotalCount / limit);
 
     const response = await feedbackModel
-      .find({ tale_id: taleId })
+      .find({ taleId: taleId })
       .limit(limit)
       .skip(offset)
       .exec();
@@ -87,7 +87,9 @@ const getFeedbackById = async (feedbackId: string, userId: string) => {
         "User Id r equired"
       );
     }
-    const response = await feedbackModel.findOne({ _id: feedbackId });
+    const response = await feedbackModel
+      .findOne({ _id: feedbackId })
+      .sort({ createdAt: -1 });
     return response;
   } catch (error) {
     console.log(error);

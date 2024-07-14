@@ -39,9 +39,9 @@ const createTales = async (
       title: validatedData.title,
       description: validatedData.description,
       feedback: null,
-      workflow_id: workflowId,
-      author_id: authorId,
-      author_name: authorName,
+      workflowId: workflowId,
+      authorId: authorId,
+      authorName: authorName,
     });
 
     await newTale.save();
@@ -66,12 +66,12 @@ const getTales = async (
 
   try {
     const totalTalezCount = await talesModel.countDocuments({
-      workflow_id: workflowId,
+      workflowId: workflowId,
     });
 
     const totalPages = Math.ceil(totalTalezCount / limit);
     const response = await talesModel
-      .find({ workflow_id: workflowId })
+      .find({ workflowId: workflowId })
       .limit(limit)
       .skip(offset)
       .exec();
