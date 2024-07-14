@@ -41,11 +41,11 @@ export const checkRole =
 
       // get tales from taleid or feedback_id finding same tale
       const getTaleDetail = await talesModel.findOne({
-        _id: taleId || getFeedback?.tale_id,
+        _id: taleId || getFeedback?.taleId,
       });
 
       // workflow based on taleDetail
-      const getWorkFlowId = getTaleDetail?.workflow_id;
+      const getWorkFlowId = getTaleDetail?.workflowId;
 
       //finding shared document
       const getSharedDocument = await shareModel.findOne({
