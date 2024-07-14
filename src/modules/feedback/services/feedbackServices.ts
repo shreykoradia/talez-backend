@@ -65,6 +65,7 @@ const getFeedBacks = async (
 
     const response = await feedbackModel
       .find({ taleId: taleId })
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(offset)
       .exec();
@@ -87,9 +88,7 @@ const getFeedbackById = async (feedbackId: string, userId: string) => {
         "User Id r equired"
       );
     }
-    const response = await feedbackModel
-      .findOne({ _id: feedbackId })
-      .sort({ createdAt: -1 });
+    const response = await feedbackModel.findOne({ _id: feedbackId });
     return response;
   } catch (error) {
     console.log(error);
