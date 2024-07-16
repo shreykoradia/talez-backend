@@ -53,7 +53,7 @@ const getAllWorkFlows = async (
 
     // checking for if any shared workflow is there
     const sharedWorkflows = await shareModel.find({
-      shared_to: userId,
+      sharedTo: userId,
     });
 
     // mapping all shared workflow ids

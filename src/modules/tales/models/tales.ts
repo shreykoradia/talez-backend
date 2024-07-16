@@ -11,19 +11,19 @@ const taleSchema = new Schema<tale>({
     type: String,
     required: true,
   },
-  author_id: {
+  authorId: {
     type: String,
     required: true,
   },
-  author_name: {
+  authorName: {
     type: String,
     required: true,
   },
-  workflow_id: {
+  workflowId: {
     type: String,
     required: true,
   },
-  created_at: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },

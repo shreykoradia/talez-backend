@@ -36,26 +36,26 @@ const upVote = async (
 
     // exisitng downVote
     const existingDownVote = await reactionModel.findOne({
-      tale_id: talez_id,
-      feedback_id: feedback_id,
-      author_id: userId,
-      vote_type: "downvote",
+      taleId: talez_id,
+      feedbackId: feedback_id,
+      authorId: userId,
+      voteType: "downvote",
     });
     if (existingDownVote) {
       await reactionModel.findOneAndDelete({
-        tale_id: talez_id,
-        author_id: userId,
-        feedback_id: feedback_id,
-        vote_type: "downvote",
+        taleId: talez_id,
+        authorId: userId,
+        feedbackId: feedback_id,
+        voteType: "downvote",
       });
     }
 
     const newUpVote = new reactionModel({
-      tale_id: talez_id,
-      author_name: authorName,
-      feedback_id: feedback_id,
-      author_id: authorId,
-      vote_type: userData,
+      taleId: talez_id,
+      authorName: authorName,
+      feedbackId: feedback_id,
+      authorId: authorId,
+      voteType: userData,
     });
     await newUpVote.save();
     return newUpVote;
@@ -98,26 +98,26 @@ const downVote = async (
 
     // exisitng downVote
     const existingUpVote = await reactionModel.findOne({
-      tale_id: talez_id,
-      author_id: userId,
-      feedback_id: feedbackId,
-      vote_type: "upvote",
+      taleId: talez_id,
+      authorId: userId,
+      feedbackId: feedbackId,
+      voteType: "upvote",
     });
     if (existingUpVote) {
       await reactionModel.findOneAndDelete({
-        tale_id: talez_id,
-        author_id: userId,
-        feedback_id: feedbackId,
-        vote_type: "upvote",
+        taleId: talez_id,
+        authorId: userId,
+        feedbackId: feedbackId,
+        voteType: "upvote",
       });
     }
 
     const newDownVote = new reactionModel({
-      tale_id: talez_id,
-      author_name: authorName,
-      author_id: authorId,
-      feedback_id: feedbackId,
-      vote_type: userData,
+      taleId: talez_id,
+      authorName: authorName,
+      authorId: authorId,
+      feedbackId: feedbackId,
+      voteType: userData,
     });
     await newDownVote.save();
     return newDownVote;
@@ -135,12 +135,12 @@ const countReaction = async (userId: string, feedbackId: string) => {
       );
     }
     const upvote_response = await reactionModel.find({
-      feedback_id: feedbackId,
-      vote_type: "upvote",
+      feedbackId: feedbackId,
+      voteType: "upvote",
     });
     const downvote_response = await reactionModel.find({
-      feedback_id: feedbackId,
-      vote_type: "downvote",
+      feedbackId: feedbackId,
+      voteType: "downvote",
     });
     if (upvote_response.length > downvote_response.length) {
       return { count: upvote_response.length, count_type: "upvote" };
@@ -163,8 +163,8 @@ const voteByFeedbackId = async (feedbackId: string, userId: string) => {
     }
 
     const response = await reactionModel.findOne({
-      feedback_id: feedbackId,
-      author_id: userId,
+      feedbackId: feedbackId,
+      authorId: userId,
     });
 
     return response;

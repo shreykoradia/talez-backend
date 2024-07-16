@@ -33,7 +33,7 @@ const inviteUser = async (
   if (invitedUserExist) {
     // if invitedUser is a part of workflow or document
     const invitedUser = await shareModel.findOne({
-      shared_to: invitedUserExist?._id,
+      sharedTo: invitedUserExist?._id,
     });
 
     if (invitedUser) {
@@ -44,9 +44,9 @@ const inviteUser = async (
     }
 
     const invite = new shareModel({
-      shared_to: invitedUserExist?._id,
+      sharedTo: invitedUserExist?._id,
       role: userData?.role,
-      shared_by: sharedBy?._id,
+      sharedBy: sharedBy?._id,
       workflow: workflowId,
     });
     await invite.save();
@@ -78,12 +78,12 @@ const getUsersWithAccess = async (userId: string, workflowId: string) => {
     const response = await shareModel.find({ workflow: workflowId });
     const enrichedResponse = await Promise.all(
       response.map(async (share) => {
-        const user = await userModel.findById(share.shared_to);
+        const user = await userModel.findById(share.sharedTo);
         if (user) {
-          const { shared_to, ...shareWithoutSharedTo } = share.toObject();
+          const { sharedTo, ...shareWithoutSharedTo } = share.toObject();
           return {
             ...shareWithoutSharedTo,
-            shared_to: {
+            sharedTo: {
               _id: user._id,
               username: user.username,
               email: user.email,
@@ -121,7 +121,7 @@ const updateAccess = async (
     const userDetails = await userModel.findOne({ email: userData?.email });
     await shareModel.updateOne(
       {
-        shared_to: userDetails?._id,
+        sharedTo: userDetails?._id,
         workflow: workflowId,
       },
       { $set: { role: userData?.role } }
@@ -145,7 +145,7 @@ const removeAccess = async (
     }
     const userDetails = await userModel.findOne({ email: userData?.email });
     const removedSharedUser = await shareModel.findOneAndDelete({
-      shared_to: userDetails?._id,
+      sharedTo: userDetails?._id,
       workflow: workflowId,
     });
 
