@@ -1,33 +1,34 @@
 import { Schema, model } from "mongoose";
+import { ReactionModel } from "../types";
 
-const reactionSchema = new Schema({
-  author_id: {
+const reactionSchema = new Schema<ReactionModel>({
+  authorId: {
     type: String,
     required: true,
   },
-  author_name: {
+  authorName: {
     type: String,
     required: true,
   },
-  tale_id: {
+  taleId: {
     type: String,
     required: true,
   },
-  feedback_id: {
+  feedbackId: {
     type: String,
     required: true,
   },
-  vote_type: {
+  voteType: {
     type: String,
     enum: ["upvote", "downvote"],
     required: true,
   },
-  created_at: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-const reactionModel = model("Reaction", reactionSchema);
+const reactionModel = model<ReactionModel>("Reaction", reactionSchema);
 
 export default reactionModel;

@@ -1,7 +1,9 @@
+import { ObjectId } from "mongoose";
+
 export type Share = {
-  workflow: string;
-  shared_to: string;
-  shared_by: string;
+  workflow: ObjectId;
+  sharedTo: string;
+  sharedBy: ObjectId;
   role: string;
-  shared_at: Date | string;
+  sharedAt: Date | string;
 };

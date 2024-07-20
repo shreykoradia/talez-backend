@@ -21,7 +21,7 @@ const workflowSchema = new Schema({
     required: true,
     unique: false,
   },
-  created_at: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },

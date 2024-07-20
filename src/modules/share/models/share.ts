@@ -1,17 +1,17 @@
 import mongoose, { Schema, model } from "mongoose";
 import { Share } from "../types";
 
-const shareSchema = new Schema({
+const shareSchema = new Schema<Share>({
   workflow: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "workFlow",
     required: true,
   },
-  shared_to: {
+  sharedTo: {
     type: String,
     required: true,
   },
-  shared_by: {
+  sharedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Users",
     required: true,
@@ -21,7 +21,7 @@ const shareSchema = new Schema({
     enum: ["can_edit", "can_view", "full_access"],
     required: true,
   },
-  shared_at: {
+  sharedAt: {
     type: Date,
     default: Date.now,
   },
