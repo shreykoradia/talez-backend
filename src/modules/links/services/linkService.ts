@@ -53,7 +53,6 @@ const getLinks = async (taleId: string) => {
       return;
     }
     const getLink = await linkModel.find({ taleId: taleId });
-
     return getLink;
   } catch (err) {
     console.error(err);
@@ -61,4 +60,18 @@ const getLinks = async (taleId: string) => {
   }
 };
 
-export default { addLink, getLinks };
+const deleteLink = async (taleId: string, linkId: string) => {
+  try {
+    if (!taleId || !linkId) {
+      return;
+    }
+    const deleteResponse = await linkModel.findByIdAndDelete(linkId);
+
+    return deleteResponse;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export default { addLink, getLinks, deleteLink };

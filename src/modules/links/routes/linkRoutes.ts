@@ -6,15 +6,25 @@ import linkController from "../controllers/linkController";
 
 const router = express();
 
-router.get("/links", authenticateToken, checkRole(roles));
+router.get(
+  "/get-link",
+  authenticateToken,
+  checkRole(roles),
+  linkController.getLink
+);
 
 router.post(
-  "/links",
+  "/add-link",
   authenticateToken,
   checkRole(access_roles),
   linkController.addLink
 );
 
-router.delete("/links/:id", authenticateToken, checkRole(access_roles));
+router.delete(
+  "/delete-link/:linkId",
+  authenticateToken,
+  checkRole(access_roles),
+  linkController.deleteLink
+);
 
 export default router;

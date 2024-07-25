@@ -77,7 +77,7 @@ const addLink = async (
     } else {
       res
         .status(HTTP_RESPONSE_CODE.CREATED)
-        .json({ link: newLink, msg: "Link successfully Added" });
+        .json({ link: newLink, msg: "Link successfully added" });
     }
   } catch (err) {
     console.error("Something Went Wrong!", err);
@@ -98,7 +98,7 @@ const getLink = async (
     if (!taleId) {
       return res
         .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
-        .json({ message: "taleId is required" });
+        .json({ message: "TaleId is required" });
     }
 
     if (!userId) {
@@ -124,4 +124,50 @@ const getLink = async (
   }
 };
 
-export default { addLink };
+const deleteLink = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { query } = req;
+    const taleId = query?.taleId;
+    const userId = req?.user?.userId;
+    const linkId = req?.params?.linkId;
+
+    if (!taleId) {
+      return res
+        .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+        .json({ message: "TaleId is required" });
+    }
+
+    if (!linkId) {
+      return res
+        .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+        .json({ message: "link Id is required" });
+    }
+
+    if (!userId) {
+      return res
+        .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+        .json({ message: "User Id is required" });
+    }
+
+    const linksResponse = await linkService.deleteLink(taleId, linkId);
+
+    if (!linksResponse) {
+      return res
+        .status(HTTP_RESPONSE_CODE.SERVER_ERROR)
+        .json({ message: "Something went wrong" });
+    }
+
+    return res
+      .status(HTTP_RESPONSE_CODE.SUCCESS)
+      .json({ message: "Link deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
+
+export default { addLink, getLink, deleteLink };

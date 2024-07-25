@@ -10,7 +10,9 @@ declare global {
   }
 }
 
-export interface RequestParams {}
+export interface RequestParams {
+  linkId?: string;
+}
 
 export interface ResponseBody {}
 
