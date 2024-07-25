@@ -4,6 +4,7 @@ declare global {
   namespace Express {
     interface Request {
       user?: Record<string, any>;
+
       paginate?: { limit: number; offset: number };
     }
   }
