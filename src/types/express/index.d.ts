@@ -4,12 +4,15 @@ declare global {
   namespace Express {
     interface Request {
       user?: Record<string, any>;
+
       paginate?: { limit: number; offset: number };
     }
   }
 }
 
-export interface RequestParams {}
+export interface RequestParams {
+  linkId?: string;
+}
 
 export interface ResponseBody {}
 

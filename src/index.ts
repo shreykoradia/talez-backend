@@ -9,6 +9,8 @@ import talesRoutes from "./modules/tales/routes/talesRoutes";
 import feedbackRoutes from "./modules/feedback/routes/feedbackRoutes";
 import reactionRoutes from "./modules/reactions/routes/reactionRoutes";
 import shareRoutes from "./modules/share/routes/shareRoutes";
+import linkRoutes from "./modules/links/routes/linkRoutes";
+
 import errorHandler from "./shared/middlware/errorHandler";
 
 dotenv.config();
@@ -29,6 +31,7 @@ app.use("/v1/tales", talesRoutes);
 app.use("/v1/feedback", feedbackRoutes);
 app.use("/v1/reaction", reactionRoutes);
 app.use("/v1/share", shareRoutes);
+app.use("/v1/links", linkRoutes);
 
 // ERROR HANDLER MIDDLEWARE - should be used LAST only always
 app.use(errorHandler);
