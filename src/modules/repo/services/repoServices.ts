@@ -1,0 +1,44 @@
+import axios from "axios";
+import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
+import { HttpException } from "../../../shared/exception/exception";
+import userModel from "../../auth/models/users";
+
+const getGithubRepositories = async (
+  userId: string,
+  limit: number,
+  offset: number
+) => {
+  try {
+    const page = Math.floor(offset / limit) + 1;
+
+    const userDetail = await userModel.findById(userId);
+    const githubToken = userDetail?.githubToken;
+    if (!userDetail || !githubToken) {
+      return new HttpException(401, "User unauthorised");
+    }
+
+    const githubResponse = await axios.get(
+      "https://api.github.com/user/repos",
+      {
+        headers: { Authorization: `Bearer ${githubToken}` },
+        params: { page: page, per_page: limit },
+      }
+    );
+
+    const nextPageData = await axios.get("https://api.github.com/user/repos", {
+      headers: { Authorization: `Bearer ${githubToken}` },
+      params: { page: page + 1, per_page: limit },
+    });
+
+    const hasMoreData = nextPageData.data.length === 0 ? false : true;
+
+    const repoResponse = githubResponse.data;
+
+    return { repositories: repoResponse, hasMoreData: hasMoreData };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export default { getGithubRepositories };

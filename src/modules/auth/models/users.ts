@@ -17,6 +17,11 @@ const userSchema = new Schema<User>({
     required: false,
     default: null,
   },
+  githubToken: {
+    type: String,
+    required: false,
+    default: null,
+  },
   password: {
     type: String,
     required: false,

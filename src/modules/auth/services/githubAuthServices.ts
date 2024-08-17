@@ -24,6 +24,7 @@ const signInGitHubUser = async (code: string) => {
 
     if (!user) {
       user = new userModel({
+        githubToken: accessToken,
         githubId: userResponse.data.id,
         username: userResponse.data.login,
         email: userResponse.data.email || null,
