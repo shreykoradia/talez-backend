@@ -37,8 +37,8 @@ const login = async (userData: any) => {
     const user = await userModel.findOne({ email: userData?.email });
     if (!user) {
       throw new HttpException(
-        HTTP_RESPONSE_CODE.NOT_FOUND,
-        "User doesn't exist"
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        "User not Authorised"
       );
     }
     const validPassword = await bcrypt.compare(
@@ -66,8 +66,8 @@ const getUserById = async (userId: string) => {
   try {
     if (!userId) {
       throw new HttpException(
-        HTTP_RESPONSE_CODE.NOT_FOUND,
-        "User Id do not exists"
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        "User not authorised"
       );
     }
     const getUser = await userModel.findById(userId, { password: 0 });

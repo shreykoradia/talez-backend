@@ -22,7 +22,10 @@ const addFeedBack = async (
     }
     const user = await userModel.findById(userId);
     if (!user) {
-      throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "User not found");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        "User unauthorised"
+      );
     }
 
     // extracting authorName & authorId
