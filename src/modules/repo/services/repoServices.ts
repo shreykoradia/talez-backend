@@ -69,6 +69,7 @@ const connectGithubRepo = async (
       const savedResponse = new repositoryModel({
         repoId: repoData.repo_id,
         repoName: repoData.repo_name,
+        repoOwner: repoData.repo_owner,
         repoCloneUrl: repoData.repo_clone_url,
         repoGitUrl: repoData.repo_git_url,
         repoSSHUrl: repoData.repo_ssh_url,

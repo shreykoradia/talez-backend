@@ -14,9 +14,13 @@ const repositorySchema = new Schema<RepositorySchema>({
     type: String,
     required: true,
   },
+  repoOwner: {
+    type: String,
+    required: true,
+  },
   repoCloneUrl: {
     type: String,
-    required: true,   
+    required: true,
   },
   repoGitUrl: {
     type: String,

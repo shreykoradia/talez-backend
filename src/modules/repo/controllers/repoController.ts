@@ -31,6 +31,10 @@ const connectRepository = async (
   const repositorySchema = Joi.object({
     repo_id: Joi.string().trim().required().label("Repository Id"),
     repo_name: Joi.string().trim().required().label("Repository Name"),
+    repo_owner_name: Joi.string()
+      .trim()
+      .required()
+      .label("Repository Owner Name"),
     repo_clone_url: Joi.string()
       .trim()
       .required()
