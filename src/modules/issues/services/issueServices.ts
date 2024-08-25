@@ -60,6 +60,7 @@ const createIssue = async (userId: string, taleId: string) => {
         status: githubResponse?.data?.state,
       });
       await githubIssue.save();
+      return githubIssue;
     } else {
       throw new HttpException(
         githubResponse?.status,

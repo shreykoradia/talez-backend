@@ -35,7 +35,9 @@ const createIssue = async (
 
     const response = await issueServices.createIssue(userId, taleId);
 
-    res.status(200).json({ response });
+    res
+      .status(201)
+      .json({ issue: response, message: "Issue created successfully" });
   } catch (error) {
     console.log(error);
     next(error);
