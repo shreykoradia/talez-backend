@@ -11,6 +11,7 @@ import reactionRoutes from "./modules/reactions/routes/reactionRoutes";
 import shareRoutes from "./modules/share/routes/shareRoutes";
 import linkRoutes from "./modules/links/routes/linkRoutes";
 import repoRoutes from "./modules/repo/routes/repoRoutes";
+import issueRoutes from "./modules/issues/routes/issueRoutes";
 
 import errorHandler from "./shared/middlware/errorHandler";
 
@@ -34,6 +35,7 @@ app.use("/v1/reaction", reactionRoutes);
 app.use("/v1/share", shareRoutes);
 app.use("/v1/links", linkRoutes);
 app.use("/v1/connect", repoRoutes);
+app.use("/v1/issues", issueRoutes);
 
 // ERROR HANDLER MIDDLEWARE - should be used LAST only always
 app.use(errorHandler);

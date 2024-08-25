@@ -4,6 +4,12 @@ import repoServices from "../services/repoServices";
 import Joi from "joi";
 import { HttpException } from "../../../shared/exception/exception";
 import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
+import {
+  RequestBody,
+  RequestParams,
+  RequestQuery,
+  ResponseBody,
+} from "../../../types/express";
 
 const getUserRepo = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -24,7 +30,7 @@ const getUserRepo = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const connectRepository = async (
-  req: Request,
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
   res: Response,
   next: NextFunction
 ) => {

@@ -2,6 +2,8 @@ import express from "express";
 import { authenticateToken } from "../../../shared/middlware/authMiddleWare";
 import repoController from "../controllers/repoController";
 import { paginateMiddleWare } from "../../../shared/middlware/paginateMiddleWare";
+import { checkRole } from "../../../shared/middlware/checkRoles";
+import { create_roles } from "../../../shared/constants";
 
 const router = express();
 
@@ -17,7 +19,7 @@ router.get(
 router.post(
   "/github/repository",
   authenticateToken,
-  paginateMiddleWare,
+  checkRole(create_roles),
   repoController.connectRepository
 );
 

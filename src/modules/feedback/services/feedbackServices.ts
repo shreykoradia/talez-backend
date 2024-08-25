@@ -88,7 +88,7 @@ const getFeedbackById = async (feedbackId: string, userId: string) => {
     if (!ObjectId.isValid(userId)) {
       throw new HttpException(
         HTTP_RESPONSE_CODE.BAD_REQUEST,
-        "User Id r equired"
+        "User Id required"
       );
     }
     const response = await feedbackModel.findOne({ _id: feedbackId });
