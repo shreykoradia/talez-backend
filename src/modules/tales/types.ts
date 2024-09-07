@@ -5,4 +5,6 @@ export type tale = {
   authorName: string;
   workflowId: string;
   createdAt: Date;
+  updatedAt: Date;
+  updatedBy: string;
 };
