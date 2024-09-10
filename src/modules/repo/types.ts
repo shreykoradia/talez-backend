@@ -13,7 +13,7 @@ export interface RepositoryPayload {
   workflowId: string;
   repo_id: string;
   repo_name: string;
-  repo_owner: string;
+  repo_owner_name: string;
   repo_git_url: string;
   repo_clone_url: string;
   repo_ssh_url: string;
