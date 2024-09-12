@@ -86,4 +86,49 @@ const connectGithubRepo = async (
   }
 };
 
-export default { getGithubRepositories, connectGithubRepo };
+const getConnectedRepo = async (workflowId: string, userId: string) => {
+  try {
+    if (!userId) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        " User not authorised"
+      );
+    }
+
+    const connectRepository = await repositoryModel.findOne({
+      workflowId: workflowId,
+    });
+
+    return connectRepository;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+const deleteConnectedRepo = async (workflowId: string, userId: string) => {
+  try {
+    if (!userId) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        " User not authorised"
+      );
+    }
+
+    const deleteRepo = await repositoryModel.findOneAndDelete({
+      workflowId: workflowId,
+    });
+
+    return deleteRepo;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export default {
+  getGithubRepositories,
+  connectGithubRepo,
+  getConnectedRepo,
+  deleteConnectedRepo,
+};

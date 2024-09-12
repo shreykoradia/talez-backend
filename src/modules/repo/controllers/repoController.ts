@@ -95,4 +95,80 @@ const connectRepository = async (
   }
 };
 
-export default { getUserRepo, connectRepository };
+const getConnectedRepo = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req?.user?.userId;
+    const workflowId = req?.query?.workflowId;
+    if (!userId) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        "User not authorised"
+      );
+    }
+    if (!workflowId) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.NOT_FOUND,
+        "Workflow not found"
+      );
+    }
+
+    const response = await repoServices.getConnectedRepo(workflowId, userId);
+    if (!response) {
+      res.status(500).json("Something Went Wrong");
+      return;
+    }
+    res.status(200).json({
+      connectedRepo: response,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+const deleteConnectedRepo = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req?.user?.userId;
+    const workflowId = req?.query?.workflowId;
+    if (!userId) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        "User not authorised"
+      );
+    }
+    if (!workflowId) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.NOT_FOUND,
+        "Workflow not found"
+      );
+    }
+
+    const response = await repoServices.deleteConnectedRepo(workflowId, userId);
+    if (!response) {
+      res.status(500).json("Something Went Wrong");
+      return;
+    }
+    res.status(200).json({
+      message: "Successfully Disonnected Repository",
+      connectedRepo: response,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export default {
+  getUserRepo,
+  connectRepository,
+  getConnectedRepo,
+  deleteConnectedRepo,
+};

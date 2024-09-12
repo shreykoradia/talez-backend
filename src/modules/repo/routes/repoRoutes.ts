@@ -10,7 +10,7 @@ const router = express();
 //  route used for connecting github repository.
 
 router.get(
-  "/github/repository",
+  "/github/repositories",
   authenticateToken,
   paginateMiddleWare,
   repoController.getUserRepo
@@ -21,6 +21,18 @@ router.post(
   authenticateToken,
   checkRole(create_roles),
   repoController.connectRepository
+);
+
+router.get(
+  "/github/linked/repo",
+  authenticateToken,
+  repoController.getConnectedRepo
+);
+
+router.delete(
+  "/github/linked/repo",
+  authenticateToken,
+  repoController?.deleteConnectedRepo
 );
 
 export default router;
