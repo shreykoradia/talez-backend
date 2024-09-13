@@ -117,10 +117,7 @@ const getConnectedRepo = async (
     }
 
     const response = await repoServices.getConnectedRepo(workflowId, userId);
-    if (!response) {
-      res.status(500).json("Something Went Wrong");
-      return;
-    }
+
     res.status(200).json({
       connectedRepo: response,
     });
