@@ -46,8 +46,8 @@ const signUp = async (
 
     if (!user?._id) {
       res
-        .status(HTTP_RESPONSE_CODE.NOT_FOUND)
-        .json({ message: "User Not Found" });
+        .status(HTTP_RESPONSE_CODE.UNAUTHORIZED)
+        .json({ message: "User not authorised" });
     }
 
     if (jwt_secret_key) {
