@@ -6,7 +6,7 @@ import issueController from "../controllers/issueController";
 
 const router = express();
 
-router.post(
+router.get(
   "/create-issue",
   authenticateToken,
   checkRole(create_roles),
