@@ -52,11 +52,11 @@ const getVerifyEmail = async (req: Request, res: Response) => {
     const jwt_secret_key = process.env.JWT_SECRET_KEY;
 
     if (!userId) {
-      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("User id not found");
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("User id required");
     }
     const user = await userModel.findById(userId);
     if (!user) {
-      res.status(HTTP_RESPONSE_CODE.NOT_FOUND).json("User not found");
+      res.status(HTTP_RESPONSE_CODE.UNAUTHORIZED).json("User not authorised");
       return;
     }
     if (jwt_secret_key) {

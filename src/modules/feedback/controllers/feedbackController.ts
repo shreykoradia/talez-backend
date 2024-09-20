@@ -91,7 +91,10 @@ const getFeedbacks = async (
     const offset = req.paginate?.offset as number;
 
     if (!userId) {
-      throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "User not found!");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        "User not authorised!"
+      );
     }
 
     if (!taleId) {
@@ -123,7 +126,10 @@ const getFeedbackById = async (
     const feedbackId = req.query.feedbackId;
     const userId = req.user?.userId;
     if (!userId) {
-      throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "User not found!");
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        "User not authorised!"
+      );
     }
 
     if (!feedbackId) {

@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import githubAuthServices from "../services/githubAuthServices";
 
 const githubAuth = (_req: Request, res: Response, _next: NextFunction) => {
-  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=user`;
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo`;
   res.redirect(githubAuthUrl);
 };
 

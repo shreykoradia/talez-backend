@@ -33,6 +33,7 @@ export const checkRole =
   ) => {
     try {
       const user = req?.user;
+
       const taleId = req?.query?.taleId;
       const workflowId = req?.query?.workflowId;
       const feedbackId = req?.query?.feedbackId;
