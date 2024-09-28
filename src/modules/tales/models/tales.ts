@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { tale } from "../types";
+import { string } from "joi";
 
 const taleSchema = new Schema<tale>({
   title: {
@@ -27,6 +28,14 @@ const taleSchema = new Schema<tale>({
     type: Date,
     default: Date.now,
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedBy: {
+    type: String,
+    required: false
+  }
 });
 
 const talesModel = model<tale>("tales", taleSchema);

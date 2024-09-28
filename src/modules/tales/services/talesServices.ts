@@ -4,6 +4,7 @@ import userModel from "../../auth/models/users";
 import talesModel from "../models/tales";
 import { HttpException } from "../../../shared/exception/exception";
 import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
+import shareModel from "../../share/models/share";
 
 // create tale service
 
@@ -113,4 +114,43 @@ const getTaleById = async (userId: string, taleId: string) => {
   }
 };
 
-export default { createTales, getTales, getTaleById };
+// editTalebyId
+const editTalebyId = async (
+  taleId: string,
+  userId: string,
+  workflowId: string,
+  description: string
+): Promise<void> => {
+  if (!ObjectId.isValid(userId)) {
+    throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST, "Invalid userId");
+  }
+
+  if (!ObjectId.isValid(taleId)) {
+    throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST, "Invalid taleId");
+  }
+
+  if (!ObjectId.isValid(workflowId)) {
+    throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST, "Invalid workflowId");
+  }
+
+  try {
+    const result = await talesModel.findOneAndUpdate(
+      { _id: taleId, workflowId },
+      { $set: { description, updatedBy: userId } },
+      { new: true }
+    );
+
+    if (!result) {
+      throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "Tale not found");
+    }
+  } catch (error) {
+    if (error instanceof HttpException) {
+      throw error;
+    } else {
+      console.error(error);
+      throw new HttpException(HTTP_RESPONSE_CODE.SERVER_ERROR, "Server error");
+    }
+  }
+};
+
+export default { createTales, getTales, getTaleById, editTalebyId };

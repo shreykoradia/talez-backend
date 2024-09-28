@@ -126,4 +126,45 @@ const getTaleById = async (
   }
 };
 
-export default { createTales, getTales, getTaleById };
+const editTaleById = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response,
+  next: NextFunction
+) => {
+  const taleValidationSchema = Joi.object({
+    title: Joi.string().trim().min(1).max(150).required().label("title"),
+    description: Joi.string()
+      .trim()
+      .min(1)
+      .max(5000)
+      .required()
+      .label("description"),
+  });
+  try {
+    const taleId = req.query.taleId;
+    const talesData = req.body;
+    const workflowId = req.query?.workflowId;
+    const userId = req?.user?.userId;
+
+    const validatedResult = taleValidationSchema.validate(talesData, {
+      abortEarly: false,
+    });
+    if (!taleId) {
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("tale Id Required");
+    }
+    else if (!workflowId) {
+      res.status(HTTP_RESPONSE_CODE.CONFLICT).json("workflow Id Required");
+    }
+    else if (!userId) {
+      res.status(HTTP_RESPONSE_CODE.CONFLICT).json("user Id Required");
+    }
+    else{
+      const response = await talesServices.editTalebyId( userId, taleId, workflowId, validatedResult?.value);
+    }
+  } catch (error) {
+    console.error(error);
+    next(error)
+  }
+};
+
+export default { createTales, getTales, getTaleById, editTaleById};

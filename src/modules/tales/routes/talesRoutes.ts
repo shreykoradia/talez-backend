@@ -26,5 +26,10 @@ router.get(
   checkRole(roles),
   talesController.getTaleById
 );
-
+router.get(
+  "/edit-tale",
+  authenticateToken,
+  checkRole(roles),
+  talesController.editTaleById
+);
 export default router;
