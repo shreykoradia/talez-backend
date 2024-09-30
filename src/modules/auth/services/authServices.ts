@@ -73,7 +73,7 @@ const getUserById = async (userId: string) => {
     const getUser = await userModel.findById(userId, { password: 0 });
     if (!getUser) {
       throw new HttpException(
-        HTTP_RESPONSE_CODE.NOT_FOUND,
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
         "User do not exists"
       );
     }

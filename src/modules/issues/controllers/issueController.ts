@@ -1,4 +1,3 @@
-import Joi from "joi";
 import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 import { HttpException } from "../../../shared/exception/exception";
 import {
