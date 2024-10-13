@@ -1,4 +1,4 @@
-import { NextFunction, Request, response, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 import repoServices from "../services/repoServices";
 import Joi from "joi";
@@ -10,12 +10,13 @@ import {
   RequestQuery,
   ResponseBody,
 } from "../../../types/express";
+import axios from "axios";
 
 const getUserRepo = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId = req?.user?.userId;
-    const limit = req?.paginate?.limit || 30;
-    const offset = req?.paginate?.offset || 0;
+    const userId = req.user?.userId;
+    const limit = req.paginate?.limit || 30;
+    const offset = req.paginate?.offset || 0;
 
     const githubRepository = await repoServices.getGithubRepositories(
       userId,
@@ -24,7 +25,6 @@ const getUserRepo = async (req: Request, res: Response, next: NextFunction) => {
     );
     res.status(200).json(githubRepository);
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -81,6 +81,7 @@ const connectRepository = async (
       validatedResult?.value,
       userId
     );
+
     if (!getRepositoryDetail) {
       res.status(500).json("Something Went Wrong");
       return;
@@ -135,6 +136,7 @@ const deleteConnectedRepo = async (
   try {
     const userId = req?.user?.userId;
     const workflowId = req?.query?.workflowId;
+
     if (!userId) {
       throw new HttpException(
         HTTP_RESPONSE_CODE.UNAUTHORIZED,
@@ -153,6 +155,7 @@ const deleteConnectedRepo = async (
       res.status(500).json("Something Went Wrong");
       return;
     }
+
     res.status(200).json({
       message: "Successfully Disonnected Repository",
       connectedRepo: response,

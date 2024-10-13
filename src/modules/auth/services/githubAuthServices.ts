@@ -14,7 +14,6 @@ const signInGitHubUser = async (code: string) => {
         headers: { Accept: "application/json" },
       }
     );
-
     const accessToken = tokenResponse.data.access_token;
     const userResponse = await axios.get("https://api.github.com/user", {
       headers: { Authorization: `Bearer ${accessToken}` },
@@ -37,6 +36,9 @@ const signInGitHubUser = async (code: string) => {
       await user.save();
       return { user, accessToken };
     } else {
+      user.githubToken = accessToken;
+      user.githubId = userResponse.data.id;
+      await user.save();
       return { user, accessToken };
     }
   } catch (error) {

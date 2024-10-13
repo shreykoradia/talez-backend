@@ -156,8 +156,32 @@ Please generate:
       );
     }
   } catch (error) {
-    console.log(error);
-    throw error;
+    if (axios.isAxiosError(error)) {
+      // AxiosError specific handling
+      if (error.response?.status === 401) {
+        throw new HttpException(
+          HTTP_RESPONSE_CODE.UNAUTHORIZED,
+          "Action Required: Re-authorize GitHub Integration for Security Compliance"
+        );
+      }
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.SERVER_ERROR,
+        error.message || "An error occurred with the GitHub API"
+      );
+    } else if (error instanceof Error) {
+      // Generic Error handling
+      console.error("Error:", error.message);
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.SERVER_ERROR,
+        error.message || "An unknown error occurred"
+      );
+    } else {
+      console.error("Unknown error type:", error);
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.SERVER_ERROR,
+        "An unknown error occurred"
+      );
+    }
   }
 };
 
