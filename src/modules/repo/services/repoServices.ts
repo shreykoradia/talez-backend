@@ -1,9 +1,12 @@
+import dotenv from "dotenv";
 import axios from "axios";
 import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
 import { HttpException } from "../../../shared/exception/exception";
 import userModel from "../../auth/models/users";
 import { RepositoryPayload } from "../types";
 import repositoryModel from "../models/repo";
+
+dotenv.config();
 
 const getGithubRepositories = async (
   userId: string,
@@ -14,32 +17,80 @@ const getGithubRepositories = async (
     const page = Math.floor(offset / limit) + 1;
 
     const userDetail = await userModel.findById(userId);
-    const githubToken = userDetail?.githubToken;
-    if (!userDetail || !githubToken) {
-      return new HttpException(401, "User unauthorised");
+
+    if (!userDetail || !userDetail.githubToken) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        "User unauthorized or GitHub token missing"
+      );
     }
 
-    const githubResponse = await axios.get(
-      "https://api.github.com/user/repos",
-      {
-        headers: { Authorization: `Bearer ${githubToken}` },
-        params: { page: page, per_page: limit },
+    try {
+      const githubResponse = await axios.get(
+        "https://api.github.com/user/repos",
+        {
+          headers: { Authorization: `Bearer ${userDetail.githubToken}` },
+          params: { page: page, per_page: limit },
+        }
+      );
+
+      const nextPageData = await axios.get(
+        "https://api.github.com/user/repos",
+        {
+          headers: { Authorization: `Bearer ${userDetail.githubToken}` },
+          params: { page: page + 1, per_page: limit },
+        }
+      );
+
+      const hasMoreData = nextPageData.data.length > 0;
+      const repoResponse = githubResponse.data;
+
+      return { repositories: repoResponse, hasMoreData: hasMoreData };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // AxiosError specific handling
+        if (error.response?.status === 401) {
+          throw new HttpException(
+            HTTP_RESPONSE_CODE.UNAUTHORIZED,
+            "GitHub token is expired or invalid. Reauthorization triggered."
+          );
+        }
+        throw new HttpException(
+          HTTP_RESPONSE_CODE.SERVER_ERROR,
+          error.message || "An error occurred with the GitHub API"
+        );
+      } else if (error instanceof Error) {
+        // Generic Error handling
+        console.error("Error:", error.message);
+        throw new HttpException(
+          HTTP_RESPONSE_CODE.SERVER_ERROR,
+          error.message || "An unknown error occurred"
+        );
+      } else {
+        console.error("Unknown error type:", error);
+        throw new HttpException(
+          HTTP_RESPONSE_CODE.SERVER_ERROR,
+          "An unknown error occurred"
+        );
       }
-    );
-
-    const nextPageData = await axios.get("https://api.github.com/user/repos", {
-      headers: { Authorization: `Bearer ${githubToken}` },
-      params: { page: page + 1, per_page: limit },
-    });
-
-    const hasMoreData = nextPageData.data.length === 0 ? false : true;
-
-    const repoResponse = githubResponse.data;
-
-    return { repositories: repoResponse, hasMoreData: hasMoreData };
+    }
   } catch (error) {
-    console.log(error);
-    throw error;
+    if (error instanceof HttpException) {
+      // Properly handle HttpException if thrown
+      throw error;
+    } else if (error instanceof Error) {
+      console.error("Error:", error.message);
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.SERVER_ERROR,
+        error.message || "An error occurred"
+      );
+    } else {
+      console.error("Unknown error:", error);
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.SERVER_ERROR,
+        "An unknown error occurred"
+      );
+    }
   }
 };
 
@@ -51,7 +102,7 @@ const connectGithubRepo = async (
     if (!userId) {
       throw new HttpException(
         HTTP_RESPONSE_CODE.UNAUTHORIZED,
-        " User not authorised"
+        "User not authorised"
       );
     }
 

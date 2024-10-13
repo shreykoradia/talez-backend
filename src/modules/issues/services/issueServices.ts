@@ -5,6 +5,16 @@ import userModel from "../../auth/models/users";
 import talesModel from "../../tales/models/tales";
 import repositoryModel from "../../repo/models/repo";
 import IssueModel from "../models/issues";
+import feedbackModel from "../../feedback/models/feedback";
+import analyzeFeedbacks from "./analyzeFeedback";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const genAI = new GoogleGenerativeAI(process.env.API_KEY || "");
+
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const createIssue = async (userId: string, taleId: string) => {
   try {
@@ -20,8 +30,47 @@ const createIssue = async (userId: string, taleId: string) => {
     }
 
     const taleData = await talesModel.findById(taleId);
+
     const workflowId = taleData?.workflowId;
     const repoData = await repositoryModel.findOne({ workflowId });
+
+    const feedbackData = await feedbackModel.aggregate([
+      {
+        $lookup: {
+          from: "reactions",
+          localField: "_id",
+          foreignField: "feedbackId",
+          as: "reactions",
+        },
+      },
+      {
+        $addFields: {
+          upvotes: {
+            $size: {
+              $filter: {
+                input: "$reactions",
+                as: "reaction",
+                cond: { $eq: ["$$reaction.voteType", "upvote"] },
+              },
+            },
+          },
+          downvotes: {
+            $size: {
+              $filter: {
+                input: "$reactions",
+                as: "reaction",
+                cond: { $eq: ["$$reaction.voteType", "downvote"] },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          reactions: 0,
+        },
+      },
+    ]);
 
     if (!taleData) {
       throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "Talez not found");
@@ -34,9 +83,48 @@ const createIssue = async (userId: string, taleId: string) => {
       );
     }
 
+    const { analyzedFeedbacks, overallSentiment } = await analyzeFeedbacks(
+      feedbackData
+    );
+
+    const context = {
+      tale: taleData,
+      feedbacks: feedbackData,
+      sentiment_analyzed_feedbacks: analyzedFeedbacks,
+      sentiments: overallSentiment,
+    };
+
+    const feedbacks = analyzedFeedbacks
+      .map(
+        (feedback) =>
+          `Feedback: "${feedback.feedback}", Score: ${feedback.sentimentScore})`
+      )
+      .join("\n");
+
+    const promptInput = `
+Given the tale description: "${context?.tale?.description}".
+
+You have the following feedbacks with sentiment analysis (suggest the best feedbacks if available, otherwise provide a scalable solution):
+${
+  feedbacks.length === 0
+    ? "No feedbacks available. Please suggest a scalable solution."
+    : feedbacks
+}
+
+Total Sentiment Analysis: Score (${context?.sentiments})
+
+Please generate:
+- A summarized concise feature / bug descriptions
+- Clear acceptance criteria
+- Scalable solutions (based on feedbacks or provided insights)
+- QA checks to ensure the solution meets quality standards.
+`;
+
+    const result = await model.generateContent(promptInput);
+
     const issueData = {
       title: taleData?.title,
-      body: taleData?.description,
+      body: result?.response?.text(),
     };
 
     const githubResponse = await axios.post(
@@ -68,8 +156,32 @@ const createIssue = async (userId: string, taleId: string) => {
       );
     }
   } catch (error) {
-    console.log(error);
-    throw error;
+    if (axios.isAxiosError(error)) {
+      // AxiosError specific handling
+      if (error.response?.status === 401) {
+        throw new HttpException(
+          HTTP_RESPONSE_CODE.UNAUTHORIZED,
+          "Action Required: Re-authorize GitHub Integration for Security Compliance"
+        );
+      }
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.SERVER_ERROR,
+        error.message || "An error occurred with the GitHub API"
+      );
+    } else if (error instanceof Error) {
+      // Generic Error handling
+      console.error("Error:", error.message);
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.SERVER_ERROR,
+        error.message || "An unknown error occurred"
+      );
+    } else {
+      console.error("Unknown error type:", error);
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.SERVER_ERROR,
+        "An unknown error occurred"
+      );
+    }
   }
 };
 
