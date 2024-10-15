@@ -24,5 +24,10 @@ router.get(
   checkRole(roles),
   workFlowControllers.getWorkflowById
 );
-
+router.delete(
+  "/delete-workflow",
+  authenticateToken,
+  checkRole(roles),
+  workFlowControllers.deleteWorkflowById
+);
 export default router;

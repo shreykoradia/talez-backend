@@ -26,5 +26,10 @@ router.get(
   checkRole(roles),
   feedbackController.getFeedbackById
 );
-
+router.post(
+  "/edit-feedback",
+  authenticateToken,
+  checkRole(roles),
+  feedbackController.editFeedbackById
+);
 export default router;

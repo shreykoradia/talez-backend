@@ -4,6 +4,8 @@ import workFlowModel from "../models/workFlow";
 import shareModel from "../../share/models/share";
 import { HttpException } from "../../../shared/exception/exception";
 import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
+import talesModel from "../../tales/models/tales";
+import feedbackModel from "../../feedback/models/feedback";
 
 interface userData {
   workFlowTitle: string;
@@ -131,4 +133,66 @@ const getWorkflowById = async (userId: string, workflowId: string) => {
   }
 };
 
-export default { createWorkFlow, getAllWorkFlows, getWorkflowById };
+//To delete workflow and corresponding data
+const deleteWorkFlowById = async (userId: string, workflowId: string) => {
+  try {
+    if (!ObjectId.isValid(userId)) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id required"
+      );
+    }
+
+    if (!ObjectId.isValid(workflowId)) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "Workflow Id required"
+      );
+    }
+
+    const result = await workFlowModel.findOneAndDelete({
+      _id: workflowId,
+    });
+     
+    if (!result) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.NOT_FOUND,
+        "Workflow not found"
+      );
+    }
+
+    await shareModel.deleteMany({
+      workflow: workflowId,
+    });
+
+    const tales = await talesModel.find({
+      workflow: workflowId,
+    });
+
+    const taleIds = tales.map(tale => tale._id);
+
+    await Promise.all(taleIds.map(async (taleId) => {
+      await feedbackModel.deleteMany({
+        taleId: taleId,
+      });
+    }));
+
+    await talesModel.deleteMany({
+      workflow: workflowId,
+    });
+
+    if (!result) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.NOT_FOUND,
+        "Workflow not found"
+      );
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Error occurred while fetching workflow:", error);
+    throw error;
+  }
+};
+
+export default { createWorkFlow, getAllWorkFlows, getWorkflowById, deleteWorkFlowById };

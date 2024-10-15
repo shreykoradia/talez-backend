@@ -3,6 +3,7 @@ import Joi from "joi";
 import feedbackServices from "../services/feedbackServices";
 import { HttpException } from "../../../shared/exception/exception";
 import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
+import feedbackModel from "../models/feedback";
 
 interface RequestParams {}
 
@@ -141,4 +142,36 @@ const getFeedbackById = async (
   }
 };
 
-export default { addFeedBack, getFeedbacks, getFeedbackById };
+const editFeedbackById = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response,
+  next: NextFunction
+) => {
+  const feedbackValidationSchema = Joi.object({
+    feedback: Joi.string().trim().min(1).max(500).required().label("title"),
+  });
+  try {
+    const feedbackId = req.query.feedbackId;
+    const feedback = req.body;
+    const userId = req.user?.userId;
+    if (!userId) {
+      throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "User not found!");
+    }
+
+    if (!feedbackId) {
+      throw new HttpException(HTTP_RESPONSE_CODE.BAD_REQUEST,"Feedback not found!");
+    }
+    
+    const validatedFeedback = feedbackValidationSchema.validate(feedback, {
+      abortEarly: false,
+    });
+
+    const response = await feedbackServices.editFeedbackById(feedbackId ,validatedFeedback?.value, userId);
+    res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ feedback: response });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export default { addFeedBack, getFeedbacks, getFeedbackById, editFeedbackById };

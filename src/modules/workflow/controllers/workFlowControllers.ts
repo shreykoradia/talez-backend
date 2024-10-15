@@ -126,4 +126,29 @@ const getWorkflowById = async (
   }
 };
 
-export default { createWorkFlow, getAllWorkFlows, getWorkflowById };
+const deleteWorkflowById = async (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user?.userId;
+    const workflowId = req.query.workflowId;
+    if (!userId) {
+      throw Error("UserId does not exist");
+    }
+    if (!workflowId) {
+      res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json("Workflow Id required");
+    } else {
+      const workflow = await workFlowServices.deleteWorkFlowById(
+        userId,
+        workflowId
+      );
+      res.status(HTTP_RESPONSE_CODE.SUCCESS).json({ workflow });
+    }
+  } catch (error) {
+    console.error("Something Went Wrong Huh!", error);
+    next(error);
+  }
+};
+export default { createWorkFlow, getAllWorkFlows, getWorkflowById , deleteWorkflowById };

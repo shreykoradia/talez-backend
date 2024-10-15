@@ -96,4 +96,27 @@ const getFeedbackById = async (feedbackId: string, userId: string) => {
   }
 };
 
-export default { addFeedBack, getFeedBacks, getFeedbackById };
+const editFeedbackById = async (feedbackId: string, feedback: string, userId: string) => {
+  try {
+    if (!ObjectId.isValid(userId)) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.BAD_REQUEST,
+        "User Id required"
+      );
+    }
+    const response = await feedbackModel.findOneAndUpdate(
+      { _id: feedbackId },
+      { $set : { feedback: feedback}},
+      { new: true });
+
+    if (!response) {
+      throw new HttpException(HTTP_RESPONSE_CODE.NOT_FOUND, "feedback not found");
+    }
+    return response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export default { addFeedBack, getFeedBacks, getFeedbackById, editFeedbackById };

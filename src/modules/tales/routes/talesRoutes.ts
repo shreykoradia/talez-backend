@@ -26,7 +26,7 @@ router.get(
   checkRole(roles),
   talesController.getTaleById
 );
-router.get(
+router.post(
   "/edit-tale",
   authenticateToken,
   checkRole(roles),
