@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import userModel from "../models/users";
 import { markEmailAsVerified } from "../services/verificationMailServices";
 import { sendEmailVerification } from "../../../shared/mail-service/email";
 import { HTTP_RESPONSE_CODE } from "../../../shared/constants";
+
+dotenv.config();
 
 const verifyEmail = async (req: Request, res: Response): Promise<void> => {
   const { token } = req.params;
@@ -35,9 +38,7 @@ const verifyEmail = async (req: Request, res: Response): Promise<void> => {
     }
 
     await markEmailAsVerified(userId);
-    res
-      .status(HTTP_RESPONSE_CODE.SUCCESS)
-      .json({ message: "Email verification successful" });
+    res.redirect(`${process.env.FRONTEND_PROD_URL}`);
   } catch (error) {
     console.error(error);
     res
