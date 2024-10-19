@@ -5,8 +5,29 @@ import githubAuthServices from "../services/githubAuthServices";
 
 dotenv.config();
 
-const githubAuth = (_req: Request, res: Response, _next: NextFunction) => {
-  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo`;
+interface RequestParams {}
+
+interface ResponseBody {}
+
+interface RequestBody {}
+
+interface RequestQuery {
+  token?: string;
+}
+
+interface DecodedToken {
+  userId: string;
+  iat: number;
+  exp: number;
+}
+
+const githubAuth = (
+  req: Request<RequestParams, ResponseBody, RequestBody, RequestQuery>,
+  res: Response,
+  _next: NextFunction
+) => {
+  const userToken = req?.query?.token;
+  const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo&state=${userToken}`;
   res.redirect(githubAuthUrl);
 };
 
@@ -16,12 +37,22 @@ const githubCallback = async (
   next: NextFunction
 ) => {
   const code = req.query.code as string;
+  const state = req.query.state as string;
+  const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
   if (!code) {
     return res.status(400).send("Code not provided");
   }
 
   try {
-    const { user } = await githubAuthServices.signInGitHubUser(code);
+    let decodedToken: DecodedToken | null = null;
+    if (JWT_SECRET_KEY) {
+      decodedToken = jwt.verify(state, JWT_SECRET_KEY) as DecodedToken;
+    }
+
+    const { user } = await githubAuthServices.signInGitHubUser(
+      code,
+      decodedToken
+    );
 
     if (!user) {
       res.status(400).json("UserId is required");

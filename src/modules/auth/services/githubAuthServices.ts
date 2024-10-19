@@ -1,7 +1,16 @@
 import axios from "axios";
 import userModel from "../models/users";
 
-const signInGitHubUser = async (code: string) => {
+interface DecodedToken {
+  userId: string;
+  iat: number;
+  exp: number;
+}
+
+const signInGitHubUser = async (
+  code: string,
+  decodedToken: DecodedToken | null
+) => {
   try {
     const tokenResponse = await axios.post(
       "https://github.com/login/oauth/access_token",
@@ -19,7 +28,13 @@ const signInGitHubUser = async (code: string) => {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    let user = await userModel.findOne({ githubId: userResponse.data.id });
+    let user;
+
+    if (decodedToken && decodedToken?.userId) {
+      user = await userModel.findById(decodedToken?.userId);
+    } else {
+      user = await userModel.findOne({ githubId: userResponse.data.id });
+    }
 
     if (!user) {
       user = new userModel({
