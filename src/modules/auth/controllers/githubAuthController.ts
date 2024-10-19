@@ -39,16 +39,22 @@ const githubCallback = async (
   const code = req.query.code as string;
   const state = req.query.state as string;
   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+
   if (!code) {
     return res.status(400).send("Code not provided");
   }
 
-  try {
-    let decodedToken: DecodedToken | null = null;
-    if (JWT_SECRET_KEY) {
-      decodedToken = jwt.verify(state, JWT_SECRET_KEY) as DecodedToken;
-    }
+  let decodedToken: DecodedToken | null = null;
 
+  if (state && JWT_SECRET_KEY) {
+    try {
+      decodedToken = jwt.verify(state, JWT_SECRET_KEY) as DecodedToken;
+    } catch (error) {
+      console.log("State is undefined in the github authorization api", error);
+    }
+  }
+
+  try {
     const { user } = await githubAuthServices.signInGitHubUser(
       code,
       decodedToken
