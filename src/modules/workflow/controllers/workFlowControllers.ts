@@ -54,10 +54,12 @@ const createWorkFlow = async (
     const getWorkflowsCount = await workFlowModel
       .find({ authorId: userId })
       .countDocuments();
-    if (getWorkflowsCount > 3) {
+
+    console.log(getWorkflowsCount);
+    if (getWorkflowsCount >= 5) {
       throw new HttpException(
         HTTP_RESPONSE_CODE.BAD_REQUEST,
-        "Maximum of 3 Workflows can be created in MVP Phase"
+        "Maximum of 5 Workflows can be created in free tier"
       );
     }
     const createWorkFlowData = await workFlowServices.createWorkFlow(
