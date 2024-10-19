@@ -55,7 +55,6 @@ const createWorkFlow = async (
       .find({ authorId: userId })
       .countDocuments();
 
-    console.log(getWorkflowsCount);
     if (getWorkflowsCount >= 5) {
       throw new HttpException(
         HTTP_RESPONSE_CODE.BAD_REQUEST,
