@@ -9,8 +9,11 @@ const userSchema = new Schema<User>({
   email: {
     type: String,
     required: false,
-    unique: true,
     default: null,
+    index: {
+      unique: true,
+      partialFilterExpression: { email: { $type: "string" } },
+    },
   },
   githubId: {
     type: String,
